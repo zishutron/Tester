@@ -1,0 +1,2193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AppForge - Professional Android APK Builder</title>
+    <style>
+        /* ===== CSS RESET & VARIABLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0b0b12;
+            --bg-secondary: #13131f;
+            --bg-card: #1a1a2e;
+            --bg-card-hover: #22223f;
+            --bg-editor: #0e0e16;
+            --bg-input: #0b0b12;
+            --text-primary: #eaeaf2;
+            --text-secondary: #9a9ab0;
+            --text-muted: #5a5a72;
+            --accent: #6c5ce7;
+            --accent-hover: #7c6cf0;
+            --accent-glow: rgba(108, 92, 231, 0.25);
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #e17055;
+            --border: #28283e;
+            --radius: 14px;
+            --radius-sm: 8px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+        /* ===== APP LAYOUT ===== */
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 100vw;
+            overflow: hidden;
+        }
+
+        /* ===== TOP BAR ===== */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+            min-height: 56px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .logo svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 7px 14px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            font-family: var(--font);
+        }
+
+        .btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #fff;
+            border-color: var(--success);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+            border-color: var(--danger);
+        }
+
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 11px;
+        }
+
+        .btn-icon {
+            padding: 6px 8px;
+            border-radius: var(--radius-sm);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        /* ===== MAIN LAYOUT ===== */
+        .main-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 200px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            padding: 14px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+            padding: 10px 8px 4px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 500;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            font-family: var(--font);
+        }
+
+        .nav-item:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .nav-item svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .nav-item .badge {
+            margin-left: auto;
+            background: var(--bg-card);
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-size: 9px;
+            color: var(--text-muted);
+        }
+
+        .nav-item.active .badge {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        /* ===== CONTENT ===== */
+        .content {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+        }
+
+        .panel {
+            display: none;
+            flex: 1;
+            overflow: hidden;
+            padding: 18px 20px;
+            animation: fadePanel 0.25s ease;
+        }
+
+        .panel.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadePanel {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            flex-shrink: 0;
+        }
+
+        .panel-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* ===== HOME ===== */
+        .home-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+            flex-shrink: 0;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-card .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .home-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            flex: 1;
+            overflow-y: auto;
+            padding: 2px;
+        }
+
+        .home-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            cursor: pointer;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .home-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .home-card svg {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 10px;
+        }
+
+        .home-card h3 {
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .home-card p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* ===== PROJECT LIST ===== */
+        .project-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 2px;
+        }
+
+        .project-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .project-item:hover {
+            border-color: var(--accent);
+            background: var(--bg-card-hover);
+        }
+
+        .project-item .icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .project-item .icon svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .project-item .info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .project-item .info h4 {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .project-item .info p {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .project-item .actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        /* ===== EDITOR ===== */
+        .editor-container {
+            display: flex;
+            flex: 1;
+            gap: 14px;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .file-tree {
+            width: 180px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            padding: 10px;
+            overflow-y: auto;
+            flex-shrink: 0;
+            border: 1px solid var(--border);
+        }
+
+        .file-tree .file-item {
+            padding: 5px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .file-tree .file-item:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .file-tree .file-item.active {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .file-tree .folder {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .file-tree .file-item svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+
+        .editor-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .editor-tabs {
+            display: flex;
+            gap: 0;
+            background: var(--bg-card);
+            padding: 2px 8px;
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+            flex-shrink: 0;
+        }
+
+        .editor-tab {
+            padding: 6px 14px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: var(--transition);
+            white-space: nowrap;
+            font-family: var(--font);
+        }
+
+        .editor-tab:hover {
+            color: var(--text-primary);
+        }
+
+        .editor-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .editor-textarea {
+            flex: 1;
+            background: var(--bg-editor);
+            color: var(--text-primary);
+            border: none;
+            padding: 16px 20px;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            resize: none;
+            outline: none;
+            tab-size: 2;
+        }
+
+        .editor-textarea::selection {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        /* ===== PREVIEW ===== */
+        .preview-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .preview-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .preview-bar .url {
+            flex: 1;
+            font-size: 11px;
+            color: var(--text-muted);
+            padding: 3px 10px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .preview-frame {
+            flex: 1;
+            border: none;
+            background: #fff;
+            width: 100%;
+            min-height: 200px;
+        }
+
+        .preview-console {
+            max-height: 130px;
+            background: var(--bg-editor);
+            border-top: 1px solid var(--border);
+            padding: 6px 12px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 11px;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        .preview-console .log {
+            padding: 2px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .preview-console .log.error { color: var(--danger); }
+        .preview-console .log.warn { color: var(--warning); }
+        .preview-console .log.success { color: var(--success); }
+
+        /* ===== BUILDER ===== */
+        .builder-container {
+            display: flex;
+            flex: 1;
+            gap: 18px;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .builder-config {
+            width: 280px;
+            flex-shrink: 0;
+            overflow-y: auto;
+            padding: 2px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .config-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+        }
+
+        .config-section h4 {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .config-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .config-group label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .config-group input,
+        .config-group select {
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-size: 12px;
+            transition: var(--transition);
+            font-family: var(--font);
+        }
+
+        .config-group input:focus,
+        .config-group select:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+
+        .config-group .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 3px 0;
+        }
+
+        .config-group .checkbox-row input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .config-group .checkbox-row label {
+            flex-direction: row;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .builder-logs {
+            flex: 1;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            padding: 14px 16px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            line-height: 1.8;
+            min-width: 0;
+        }
+
+        .builder-logs .line {
+            padding: 2px 0;
+            opacity: 0.85;
+        }
+
+        .builder-logs .line.success { color: var(--success); opacity: 1; }
+        .builder-logs .line.error { color: var(--danger); opacity: 1; }
+        .builder-logs .line.warn { color: var(--warning); }
+        .builder-logs .line.dim { opacity: 0.4; }
+        .builder-logs .line.bold { font-weight: 600; color: var(--text-primary); }
+
+        .build-progress {
+            margin: 6px 0;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .progress-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--success));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        /* ===== SETTINGS ===== */
+        .settings-container {
+            overflow-y: auto;
+            padding: 2px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .settings-group {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+        }
+
+        .settings-group h4 {
+            font-size: 13px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .settings-row:last-child {
+            border-bottom: none;
+        }
+
+        .settings-row .label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .settings-row .value {
+            font-size: 12px;
+            color: var(--text-primary);
+        }
+
+        .settings-row select {
+            background: var(--bg-input);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: var(--font);
+        }
+
+        .settings-row input[type="number"] {
+            width: 60px;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .settings-row input[type="checkbox"] {
+            accent-color: var(--accent);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 28px 32px;
+            max-width: 480px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .modal-header h2 { font-size: 20px; font-weight: 600; }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 22px;
+            cursor: pointer;
+            padding: 0 4px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 18px;
+            justify-content: flex-end;
+        }
+
+        .modal .config-group {
+            gap: 10px;
+        }
+
+        .modal .config-group label {
+            font-size: 12px;
+        }
+
+        .modal .config-group input,
+        .modal .config-group select {
+            padding: 8px 12px;
+            font-size: 13px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 56px;
+                padding: 8px 4px;
+            }
+            .sidebar .nav-item span:not(.badge) { display: none; }
+            .sidebar .nav-item .badge { display: none; }
+            .sidebar-label { display: none; }
+            .sidebar .nav-item { justify-content: center; padding: 10px; }
+            .sidebar .nav-item svg { width: 22px; height: 22px; }
+
+            .home-grid { grid-template-columns: 1fr; }
+            .home-stats { grid-template-columns: 1fr; }
+
+            .builder-config {
+                width: 100%;
+                max-height: 35vh;
+            }
+            .builder-container { flex-direction: column; }
+
+            .editor-container { flex-direction: column; }
+            .file-tree {
+                width: 100%;
+                max-height: 80px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+                padding: 6px 10px;
+                overflow-x: auto;
+            }
+            .file-tree .file-item {
+                padding: 3px 8px;
+                font-size: 10px;
+                background: var(--bg-card);
+                border-radius: 4px;
+                white-space: nowrap;
+            }
+            .file-tree .file-item svg { width: 12px; height: 12px; }
+            .file-tree .folder { display: none; }
+
+            .preview-console { max-height: 70px; }
+
+            .topbar {
+                padding: 6px 12px;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            .topbar .btn span { display: none; }
+            .topbar .btn { padding: 6px 8px; font-size: 14px; }
+            .logo { font-size: 15px; }
+            .logo span { display: none; }
+
+            .panel { padding: 12px 14px; }
+            .panel-header h2 { font-size: 17px; }
+
+            .modal { padding: 20px; margin: 10px; }
+        }
+
+        @media (max-width: 480px) {
+            .home-grid { grid-template-columns: 1fr; }
+            .home-stats { grid-template-columns: 1fr; }
+            .project-item { flex-wrap: wrap; gap: 8px; }
+            .project-item .actions { width: 100%; justify-content: flex-end; }
+        }
+
+        /* ===== UTILITY ===== */
+        .flex-1 { flex: 1; }
+        .mt-8 { margin-top: 8px; }
+        .mb-8 { margin-bottom: 8px; }
+        .gap-8 { gap: 8px; }
+        .text-center { text-align: center; }
+        .text-muted { color: var(--text-muted); }
+        .text-secondary { color: var(--text-secondary); }
+        .w-full { width: 100%; }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state svg {
+            width: 56px;
+            height: 56px;
+            margin-bottom: 12px;
+            opacity: 0.3;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            font-size: 13px;
+            z-index: 2000;
+            animation: slideUp 0.3s ease;
+            max-width: 90%;
+        }
+
+        .toast.success { border-color: var(--success); }
+        .toast.error { border-color: var(--danger); }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* ===== BUILD ACTION BUTTONS ===== */
+        .build-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .build-actions .btn {
+            font-size: 12px;
+            padding: 6px 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+        <div class="logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="url(#accentGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <defs>
+                    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#6c5ce7"/>
+                        <stop offset="100%" style="stop-color:#a29bfe"/>
+                    </linearGradient>
+                </defs>
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+            </svg>
+            <span>AppForge</span>
+        </div>
+        <div class="top-actions">
+            <button class="btn btn-sm" onclick="openNewProject()">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>New</span>
+            </button>
+            <button class="btn btn-sm" onclick="importZip()">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Import</span>
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="buildAPK()">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span>Build APK</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN LAYOUT -->
+    <div class="main-layout">
+
+        <!-- SIDEBAR -->
+        <nav class="sidebar">
+            <div class="sidebar-label">Menu</div>
+            <button class="nav-item active" data-panel="home" onclick="switchPanel('home')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" data-panel="projects" onclick="switchPanel('projects')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                <span>Projects</span>
+                <span class="badge" id="projectCount">0</span>
+            </button>
+            <button class="nav-item" data-panel="editor" onclick="switchPanel('editor')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <span>Editor</span>
+            </button>
+            <button class="nav-item" data-panel="preview" onclick="switchPanel('preview')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span>Preview</span>
+            </button>
+            <button class="nav-item" data-panel="builder" onclick="switchPanel('builder')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                <span>Builder</span>
+            </button>
+            <button class="nav-item" data-panel="settings" onclick="switchPanel('settings')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                <span>Settings</span>
+            </button>
+        </nav>
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            <!-- HOME PANEL -->
+            <div class="panel active" id="panel-home">
+                <div class="panel-header">
+                    <div>
+                        <h2>Dashboard</h2>
+                        <p class="text-secondary" style="font-size:13px;">Build Android apps from HTML, CSS &amp; JavaScript</p>
+                    </div>
+                </div>
+
+                <div class="home-stats">
+                    <div class="stat-card">
+                        <div class="number" id="statProjects">0</div>
+                        <div class="label">Projects</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="statBuilds">0</div>
+                        <div class="label">Builds</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="statStorage">0 MB</div>
+                        <div class="label">Storage</div>
+                    </div>
+                </div>
+
+                <div class="home-grid">
+                    <div class="home-card" onclick="openNewProject()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        <h3>New Project</h3>
+                        <p>Start a fresh HTML app with templates</p>
+                    </div>
+                    <div class="home-card" onclick="importZip()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/><polyline points="16 13 12 17 8 13"/><line x1="12" y1="17" x2="12" y2="7"/></svg>
+                        <h3>Import ZIP</h3>
+                        <p>Upload an existing website project</p>
+                    </div>
+                    <div class="home-card" onclick="switchPanel('editor')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        <h3>Code Editor</h3>
+                        <p>Edit HTML, CSS, and JavaScript files</p>
+                    </div>
+                    <div class="home-card" onclick="switchPanel('builder')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        <h3>Build APK</h3>
+                        <p>Generate a real Android APK</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROJECTS PANEL -->
+            <div class="panel" id="panel-projects">
+                <div class="panel-header">
+                    <h2>Projects</h2>
+                    <button class="btn btn-primary btn-sm" onclick="openNewProject()">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        New
+                    </button>
+                </div>
+                <div class="project-list" id="projectList"></div>
+            </div>
+
+            <!-- EDITOR PANEL -->
+            <div class="panel" id="panel-editor">
+                <div class="panel-header">
+                    <h2>Code Editor</h2>
+                    <div style="display:flex;gap:6px;">
+                        <button class="btn btn-sm btn-success" onclick="saveFile()">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                            Save
+                        </button>
+                    </div>
+                </div>
+                <div class="editor-container">
+                    <div class="file-tree" id="fileTree"></div>
+                    <div class="editor-main">
+                        <div class="editor-tabs" id="editorTabs"></div>
+                        <textarea class="editor-textarea" id="editorTextarea" spellcheck="false"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PREVIEW PANEL -->
+            <div class="panel" id="panel-preview">
+                <div class="panel-header">
+                    <h2>Live Preview</h2>
+                    <div style="display:flex;gap:6px;">
+                        <button class="btn btn-sm btn-icon" onclick="reloadPreview()">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+                        </button>
+                        <button class="btn btn-sm" onclick="toggleConsole()">Console</button>
+                    </div>
+                </div>
+                <div class="preview-container">
+                    <div class="preview-bar">
+                        <div class="url">app://local/index.html</div>
+                    </div>
+                    <iframe class="preview-frame" id="previewFrame" sandbox="allow-scripts allow-same-origin"></iframe>
+                    <div class="preview-console" id="previewConsole">
+                        <div class="log">Ready</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BUILDER PANEL -->
+            <div class="panel" id="panel-builder">
+                <div class="panel-header">
+                    <h2>APK Builder</h2>
+                </div>
+                <div class="builder-container">
+                    <div class="builder-config">
+                        <div class="config-section">
+                            <h4>App Configuration</h4>
+                            <div class="config-group">
+                                <label>
+                                    App Name
+                                    <input type="text" id="buildAppName" value="MyApp">
+                                </label>
+                                <label>
+                                    Package Name
+                                    <input type="text" id="buildPackage" value="com.appforge.myapp">
+                                </label>
+                                <label>
+                                    Version Name
+                                    <input type="text" id="buildVersion" value="1.0.0">
+                                </label>
+                                <label>
+                                    Version Code
+                                    <input type="number" id="buildVersionCode" value="1">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="config-section">
+                            <h4>Orientation</h4>
+                            <select id="buildOrientation">
+                                <option value="portrait">Portrait</option>
+                                <option value="landscape">Landscape</option>
+                                <option value="sensor">Sensor</option>
+                            </select>
+                        </div>
+
+                        <div class="config-section">
+                            <h4>Build Options</h4>
+                            <div class="config-group">
+                                <div class="checkbox-row">
+                                    <input type="checkbox" id="buildFullscreen">
+                                    <label for="buildFullscreen">Fullscreen</label>
+                                </div>
+                                <div class="checkbox-row">
+                                    <input type="checkbox" id="buildDebug">
+                                    <label for="buildDebug">Debug Build</label>
+                                </div>
+                                <div class="checkbox-row">
+                                    <input type="checkbox" id="buildSigned">
+                                    <label for="buildSigned">Sign APK</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary w-full" onclick="buildAPK()" style="padding:10px;font-size:13px;">
+                            Build APK
+                        </button>
+                    </div>
+
+                    <div class="builder-logs" id="buildLogs">
+                        <div class="line dim">Ready to build</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SETTINGS PANEL -->
+            <div class="panel" id="panel-settings">
+                <div class="panel-header">
+                    <h2>Settings</h2>
+                </div>
+                <div class="settings-container">
+                    <div class="settings-group">
+                        <h4>Appearance</h4>
+                        <div class="settings-row">
+                            <span class="label">Theme</span>
+                            <select id="themeSelect">
+                                <option value="dark">Dark</option>
+                                <option value="light">Light</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h4>Editor</h4>
+                        <div class="settings-row">
+                            <span class="label">Font Size</span>
+                            <input type="number" id="editorFontSize" value="14">
+                        </div>
+                        <div class="settings-row">
+                            <span class="label">Tab Size</span>
+                            <input type="number" id="editorTabSize" value="2">
+                        </div>
+                        <div class="settings-row">
+                            <span class="label">Word Wrap</span>
+                            <input type="checkbox" id="editorWordWrap" checked>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h4>Storage</h4>
+                        <div class="settings-row">
+                            <span class="label">Storage Used</span>
+                            <span class="value" id="settingsStorage">0 MB</span>
+                        </div>
+                        <div class="settings-row" style="border-bottom:none;padding-top:10px;">
+                            <button class="btn btn-danger btn-sm" onclick="clearAllData()">Clear All Data</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h4>About</h4>
+                        <div class="settings-row">
+                            <span class="label">AppForge</span>
+                            <span class="value">v2.0</span>
+                        </div>
+                        <div class="settings-row" style="border-bottom:none;">
+                            <span class="label">Status</span>
+                            <span class="value" style="color:var(--success);">Ready</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="modalTitle">New Project</h2>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
+<!-- ============================================================================ -->
+<!-- JAVASCRIPT -->
+<!-- ============================================================================ -->
+<script>
+(function() {
+    'use strict';
+
+    // ===== STATE =====
+    const state = {
+        projects: [],
+        currentProject: null,
+        currentFile: 'index.html',
+        files: {},
+        buildLogs: [],
+        isBuilding: false
+    };
+
+    // ===== DOM REFS =====
+    const $ = id => document.getElementById(id);
+    const qs = (sel, ctx) => (ctx || document).querySelector(sel);
+    const qsa = (sel, ctx) => (ctx || document).querySelectorAll(sel);
+
+    // ===== PERSISTENCE =====
+    function loadState() {
+        try {
+            const raw = localStorage.getItem('appforge_data');
+            if (raw) {
+                const data = JSON.parse(raw);
+                state.projects = data.projects || [];
+                state.files = data.files || {};
+                state.currentProject = data.currentProject || null;
+                if (state.currentProject && state.files[state.currentProject]) {
+                    const keys = Object.keys(state.files[state.currentProject]);
+                    if (keys.length) state.currentFile = keys[0];
+                }
+            }
+        } catch (e) { /* ignore */ }
+    }
+
+    function saveState() {
+        try {
+            localStorage.setItem('appforge_data', JSON.stringify({
+                projects: state.projects,
+                files: state.files,
+                currentProject: state.currentProject
+            }));
+        } catch (e) { /* ignore */ }
+        updateUI();
+    }
+
+    // ===== UI UPDATE =====
+    function updateUI() {
+        renderProjects();
+        updateStats();
+        updateEditor();
+        document.getElementById('projectCount').textContent = state.projects.length;
+    }
+
+    function updateStats() {
+        const count = state.projects.length;
+        document.getElementById('statProjects').textContent = count;
+        let builds = 0;
+        state.projects.forEach(p => builds += (p.buildCount || 0));
+        document.getElementById('statBuilds').textContent = builds;
+        let size = 0;
+        Object.values(state.files).forEach(fs => {
+            Object.values(fs).forEach(c => size += new Blob([c]).size);
+        });
+        const mb = (size / (1024 * 1024)).toFixed(1);
+        document.getElementById('statStorage').textContent = mb + ' MB';
+        document.getElementById('settingsStorage').textContent = mb + ' MB';
+    }
+
+    // ===== NAVIGATION =====
+    window.switchPanel = function(panel) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        const el = document.getElementById('panel-' + panel);
+        if (el) el.classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        const nav = document.querySelector(`.nav-item[data-panel="${panel}"]`);
+        if (nav) nav.classList.add('active');
+        if (panel === 'preview') reloadPreview();
+        if (panel === 'editor') updateEditor();
+    };
+
+    // ===== MODAL =====
+    window.openNewProject = function() {
+        const overlay = document.getElementById('modalOverlay');
+        overlay.classList.add('active');
+        document.getElementById('modalTitle').textContent = 'New Project';
+        document.getElementById('modalBody').innerHTML = `
+            <div class="config-group">
+                <label>
+                    Project Name
+                    <input type="text" id="inputProjectName" value="App ${state.projects.length + 1}">
+                </label>
+                <label>
+                    Package Name
+                    <input type="text" id="inputPackageName" value="com.appforge.app${state.projects.length + 1}">
+                </label>
+                <label>
+                    Template
+                    <select id="inputTemplate">
+                        <option value="blank">Blank App</option>
+                        <option value="todo">Todo App</option>
+                        <option value="calculator">Calculator</option>
+                        <option value="portfolio">Portfolio</option>
+                    </select>
+                </label>
+            </div>
+            <div class="modal-actions">
+                <button class="btn" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="createProject()">Create</button>
+            </div>
+        `;
+        setTimeout(() => document.getElementById('inputProjectName')?.focus(), 100);
+    };
+
+    window.closeModal = function() {
+        document.getElementById('modalOverlay').classList.remove('active');
+    };
+
+    // ===== PROJECT CRUD =====
+    window.createProject = function() {
+        const name = document.getElementById('inputProjectName').value.trim();
+        const pkg = document.getElementById('inputPackageName').value.trim() || 'com.appforge.app';
+        const template = document.getElementById('inputTemplate').value;
+
+        if (!name) {
+            toast('Please enter a project name', 'error');
+            return;
+        }
+        if (!/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(pkg)) {
+            toast('Invalid package name. Use format: com.example.app', 'error');
+            return;
+        }
+
+        const id = 'proj_' + Date.now();
+        const project = {
+            id: id,
+            name: name,
+            packageName: pkg,
+            version: '1.0.0',
+            versionCode: 1,
+            created: new Date().toISOString(),
+            template: template,
+            buildCount: 0
+        };
+
+        state.projects.push(project);
+        state.files[id] = getTemplateFiles(template, name);
+        state.currentProject = id;
+        const keys = Object.keys(state.files[id]);
+        state.currentFile = keys.length ? keys[0] : 'index.html';
+
+        saveState();
+        closeModal();
+        toast('Project "' + name + '" created', 'success');
+        switchPanel('editor');
+        updateEditor();
+    };
+
+    window.deleteProject = function(id) {
+        if (!confirm('Delete this project?')) return;
+        const proj = state.projects.find(p => p.id === id);
+        state.projects = state.projects.filter(p => p.id !== id);
+        delete state.files[id];
+        if (state.currentProject === id) {
+            state.currentProject = state.projects.length ? state.projects[0].id : null;
+            if (state.currentProject) {
+                state.files[state.currentProject] = state.files[state.currentProject] || {};
+            } else {
+                state.files = {};
+            }
+        }
+        saveState();
+        toast('Project deleted', 'error');
+    };
+
+    window.openProject = function(id) {
+        state.currentProject = id;
+        if (state.files[id]) {
+            const keys = Object.keys(state.files[id]);
+            state.currentFile = keys.length ? keys[0] : 'index.html';
+        } else {
+            state.files[id] = {};
+            state.currentFile = 'index.html';
+        }
+        saveState();
+        switchPanel('editor');
+        toast('Opened project', 'success');
+    };
+
+    // ===== TEMPLATES =====
+    function getTemplateFiles(template, name) {
+        const base = {
+            'index.html': `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${name}</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f0f0f5;
+            color: #1a1a2e;
+        }
+        .container { text-align: center; padding: 2rem; }
+        h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        p { color: #555; }
+        .btn {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 12px 28px;
+            background: #6c5ce7;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .btn:hover { background: #5a4bd1; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>${name}</h1>
+        <p>Built with AppForge</p>
+        <button class="btn" onclick="alert('Hello from AppForge!')">Click Me</button>
+    </div>
+</body>
+</html>`
+        };
+
+        const templates = {
+            todo: {
+                'index.html': `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: -apple-system, sans-serif; background:#f0f0f5; padding:20px; max-width:500px; margin:0 auto; }
+        h1 { margin-bottom:20px; }
+        .row { display:flex; gap:10px; margin-bottom:20px; }
+        .row input { flex:1; padding:12px; border:2px solid #ddd; border-radius:8px; font-size:16px; }
+        .row button { padding:12px 24px; background:#6c5ce7; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600; }
+        .item { display:flex; align-items:center; gap:10px; padding:12px; background:#fff; border-radius:8px; margin-bottom:6px; box-shadow:0 2px 4px rgba(0,0,0,0.08); }
+        .item.done span { text-decoration:line-through; color:#999; }
+        .item .del { margin-left:auto; background:#e17055; color:#fff; border:none; padding:4px 12px; border-radius:4px; cursor:pointer; }
+        .item input[type="checkbox"] { width:20px; height:20px; }
+        .item span { flex:1; }
+    </style>
+</head>
+<body>
+    <h1>Todo</h1>
+    <div class="row">
+        <input type="text" id="input" placeholder="Add task...">
+        <button onclick="add()">Add</button>
+    </div>
+    <div id="list"></div>
+    <script>
+        let items = [];
+        function render() {
+            const el = document.getElementById('list');
+            el.innerHTML = items.map((t,i) => \`
+                <div class="item \${t.done?'done':''}">
+                    <input type="checkbox" \${t.done?'checked':''} onchange="toggle(\${i})">
+                    <span>\${t.text}</span>
+                    <button class="del" onclick="remove(\${i})">&times;</button>
+                </div>
+            \`).join('');
+        }
+        function add() {
+            const input = document.getElementById('input');
+            if (input.value.trim()) {
+                items.push({ text: input.value.trim(), done: false });
+                input.value = '';
+                render();
+            }
+        }
+        function toggle(i) { items[i].done = !items[i].done; render(); }
+        function remove(i) { items.splice(i,1); render(); }
+        document.getElementById('input').addEventListener('keypress', e => { if(e.key==='Enter') add(); });
+        render();
+    </script>
+</body>
+</html>`
+            },
+            calculator: {
+                'index.html': `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: -apple-system, sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh; background:#1a1a2e; }
+        .calc { background:#16213e; padding:20px; border-radius:16px; width:320px; }
+        .display { background:#0f0f23; color:#fff; padding:20px; border-radius:8px; text-align:right; font-size:32px; margin-bottom:16px; min-height:60px; font-family:monospace; }
+        .buttons { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+        .buttons button { padding:16px; font-size:20px; border:none; border-radius:8px; cursor:pointer; background:#2a2a4a; color:#fff; transition:background 0.2s; }
+        .buttons button:hover { background:#3a3a5a; }
+        .buttons .op { background:#6c5ce7; }
+        .buttons .op:hover { background:#7c6cf0; }
+        .buttons .eq { background:#00b894; }
+        .buttons .eq:hover { background:#00d2a0; }
+        .buttons .clr { background:#e17055; }
+        .buttons .clr:hover { background:#e85d4a; }
+        .span2 { grid-column:span 2; }
+    </style>
+</head>
+<body>
+    <div class="calc">
+        <div class="display" id="display">0</div>
+        <div class="buttons">
+            <button class="clr" onclick="clearD()">C</button>
+            <button class="op" onclick="append('(')">(</button>
+            <button class="op" onclick="append(')')">)</button>
+            <button class="op" onclick="append('/')">÷</button>
+            <button onclick="append('7')">7</button>
+            <button onclick="append('8')">8</button>
+            <button onclick="append('9')">9</button>
+            <button class="op" onclick="append('*')">×</button>
+            <button onclick="append('4')">4</button>
+            <button onclick="append('5')">5</button>
+            <button onclick="append('6')">6</button>
+            <button class="op" onclick="append('-')">−</button>
+            <button onclick="append('1')">1</button>
+            <button onclick="append('2')">2</button>
+            <button onclick="append('3')">3</button>
+            <button class="op" onclick="append('+')">+</button>
+            <button class="span2" onclick="append('0')">0</button>
+            <button onclick="append('.')">.</button>
+            <button class="eq" onclick="calculate()">=</button>
+        </div>
+    </div>
+    <script>
+        let display = document.getElementById('display');
+        let current = '0';
+        function update() { display.textContent = current || '0'; }
+        function append(n) {
+            if (current === '0' && n !== '.') current = '';
+            current += n;
+            update();
+        }
+        function clearD() { current = '0'; update(); }
+        function calculate() {
+            try {
+                const result = Function('"use strict"; return (' + current + ')')();
+                current = String(result);
+                update();
+            } catch(e) {
+                current = 'Error';
+                update();
+                setTimeout(clearD, 1500);
+            }
+        }
+    </script>
+</body>
+</html>`
+            },
+            portfolio: {
+                'index.html': `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: -apple-system, sans-serif; background:#0a0a12; color:#eaeaf0; line-height:1.6; }
+        .container { max-width:800px; margin:0 auto; padding:40px 20px; }
+        .hero { text-align:center; padding:40px 0; }
+        .hero h1 { font-size:48px; background:linear-gradient(135deg,#6c5ce7,#a29bfe); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .hero p { color:#9a9ab0; font-size:18px; }
+        .section { margin:40px 0; }
+        .section h2 { font-size:24px; margin-bottom:16px; color:#a29bfe; }
+        .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; }
+        .card { background:#1a1a2e; padding:20px; border-radius:12px; border:1px solid #28283e; transition:border 0.3s; }
+        .card:hover { border-color:#6c5ce7; }
+        .card h3 { font-size:16px; }
+        .card p { font-size:13px; color:#9a9ab0; }
+        .tags { display:flex; flex-wrap:wrap; gap:8px; }
+        .tag { background:#1a1a2e; padding:4px 14px; border-radius:20px; font-size:12px; border:1px solid #28283e; }
+        .btn { display:inline-block; padding:12px 28px; background:#6c5ce7; color:#fff; border:none; border-radius:8px; cursor:pointer; margin-top:12px; }
+        .btn:hover { background:#7c6cf0; }
+        @media (max-width:600px) { .hero h1 { font-size:32px; } .grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>Hi, I'm Developer</h1>
+            <p>Building amazing apps with HTML, CSS & JavaScript</p>
+            <button class="btn" onclick="alert('Thanks for visiting!')">Contact</button>
+        </div>
+        <div class="section">
+            <h2>Projects</h2>
+            <div class="grid">
+                <div class="card"><h3>AppForge</h3><p>Android app builder</p></div>
+                <div class="card"><h3>Todo App</h3><p>Productivity tool</p></div>
+                <div class="card"><h3>Calculator</h3><p>Math utility</p></div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>Skills</h2>
+            <div class="tags">
+                <span class="tag">HTML</span>
+                <span class="tag">CSS</span>
+                <span class="tag">JavaScript</span>
+                <span class="tag">Android</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>`
+            }
+        };
+
+        return templates[template] || base;
+    }
+
+    // ===== RENDER PROJECTS =====
+    function renderProjects() {
+        const container = document.getElementById('projectList');
+        if (!state.projects.length) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                    <p>No projects yet</p>
+                    <button class="btn btn-primary btn-sm" onclick="openNewProject()" style="margin-top:10px;">Create One</button>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = state.projects.map(p => `
+            <div class="project-item" onclick="openProject('${p.id}')">
+                <div class="icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.18"/><line x1="8" y1="2" x2="8" y2="22"/><line x1="16" y1="2" x2="16" y2="22"/><line x1="2" y1="8" x2="22" y2="8"/><line x1="2" y1="16" x2="22" y2="16"/></svg>
+                </div>
+                <div class="info">
+                    <h4>${p.name}</h4>
+                    <p>${p.packageName} · v${p.version}</p>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-sm" onclick="event.stopPropagation();openProject('${p.id}')">Open</button>
+                    <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteProject('${p.id}')">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ===== EDITOR =====
+    function updateEditor() {
+        const textarea = document.getElementById('editorTextarea');
+        const tree = document.getElementById('fileTree');
+        const tabs = document.getElementById('editorTabs');
+
+        if (!state.currentProject || !state.files[state.currentProject]) {
+            tree.innerHTML = '<div class="file-item" style="color:var(--text-muted);">No project open</div>';
+            tabs.innerHTML = '';
+            textarea.value = 'Open a project to start editing';
+            textarea.disabled = true;
+            return;
+        }
+
+        textarea.disabled = false;
+        const files = state.files[state.currentProject];
+        const keys = Object.keys(files);
+
+        if (!keys.length) {
+            tree.innerHTML = '<div class="file-item" style="color:var(--text-muted);">No files</div>';
+            tabs.innerHTML = '';
+            textarea.value = '';
+            return;
+        }
+
+        if (!state.currentFile || !files[state.currentFile]) {
+            state.currentFile = keys[0];
+        }
+
+        // File tree
+        tree.innerHTML = `
+            <div class="file-item folder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                ${state.projects.find(p=>p.id===state.currentProject)?.name || 'Project'}
+            </div>
+            ${keys.map(f => `
+                <div class="file-item ${f === state.currentFile ? 'active' : ''}" onclick="openFile('${f}')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    ${f}
+                </div>
+            `).join('')}
+        `;
+
+        // Tabs
+        tabs.innerHTML = keys.map(f => `
+            <div class="editor-tab ${f === state.currentFile ? 'active' : ''}" onclick="openFile('${f}')">${f}</div>
+        `).join('');
+
+        // Content
+        textarea.value = files[state.currentFile] || '';
+
+        // Apply settings
+        const fontSize = parseInt(document.getElementById('editorFontSize').value) || 14;
+        const tabSize = parseInt(document.getElementById('editorTabSize').value) || 2;
+        const wordWrap = document.getElementById('editorWordWrap').checked;
+        textarea.style.fontSize = fontSize + 'px';
+        textarea.style.tabSize = tabSize;
+        textarea.style.whiteSpace = wordWrap ? 'pre-wrap' : 'pre';
+
+        // Auto-save
+        textarea.oninput = function() {
+            if (state.currentProject && state.currentFile) {
+                state.files[state.currentProject][state.currentFile] = this.value;
+                saveState();
+                clearTimeout(this._previewTimer);
+                this._previewTimer = setTimeout(() => {
+                    if (document.getElementById('panel-preview').classList.contains('active')) {
+                        reloadPreview();
+                    }
+                }, 800);
+            }
+        };
+    }
+
+    window.openFile = function(filename) {
+        state.currentFile = filename;
+        saveState();
+        updateEditor();
+    };
+
+    window.saveFile = function() {
+        if (state.currentProject && state.currentFile) {
+            const ta = document.getElementById('editorTextarea');
+            state.files[state.currentProject][state.currentFile] = ta.value;
+            saveState();
+            toast('File saved', 'success');
+        }
+    };
+
+    // ===== PREVIEW =====
+    function reloadPreview() {
+        const frame = document.getElementById('previewFrame');
+        const consoleEl = document.getElementById('previewConsole');
+
+        if (!state.currentProject || !state.files[state.currentProject]) {
+            frame.src = 'about:blank';
+            consoleEl.innerHTML = '<div class="log">No project open</div>';
+            return;
+        }
+
+        const files = state.files[state.currentProject];
+        const html = files['index.html'] || '<h1>No index.html</h1>';
+
+        try {
+            const doc = frame.contentDocument || frame.contentWindow.document;
+            doc.open();
+            doc.write(html);
+            doc.close();
+
+            // Capture console
+            consoleEl.innerHTML = '';
+            const origLog = console.log;
+            const origError = console.error;
+            const origWarn = console.warn;
+
+            const addLog = (type, msg) => {
+                const div = document.createElement('div');
+                div.className = 'log ' + type;
+                div.textContent = (type === 'log' ? '> ' : type === 'error' ? '✕ ' : '⚠ ') + msg;
+                consoleEl.appendChild(div);
+                consoleEl.scrollTop = consoleEl.scrollHeight;
+            };
+
+            try {
+                frame.contentWindow.console.log = function(...args) {
+                    addLog('log', args.join(' '));
+                };
+                frame.contentWindow.console.error = function(...args) {
+                    addLog('error', args.join(' '));
+                };
+                frame.contentWindow.console.warn = function(...args) {
+                    addLog('warn', args.join(' '));
+                };
+                // Inject console capture
+                const script = doc.createElement('script');
+                script.textContent = `
+                    console.log = function(...args) { parent.console.log(...args); };
+                    console.error = function(...args) { parent.console.error(...args); };
+                    console.warn = function(...args) { parent.console.warn(...args); };
+                `;
+                doc.head.appendChild(script);
+            } catch(e) { /* cross-origin */ }
+
+            addLog('log', 'Preview loaded');
+
+        } catch(e) {
+            consoleEl.innerHTML = '<div class="log error">✕ Error loading preview: ' + e.message + '</div>';
+        }
+    }
+
+    window.toggleConsole = function() {
+        const el = document.getElementById('previewConsole');
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    };
+
+    // ===== BUILD APK =====
+    window.buildAPK = function() {
+        if (state.isBuilding) {
+            toast('Build already in progress', 'error');
+            return;
+        }
+
+        if (!state.currentProject || !state.files[state.currentProject]) {
+            toast('Open a project first', 'error');
+            return;
+        }
+
+        const files = state.files[state.currentProject];
+        if (!files['index.html']) {
+            toast('Project must have index.html', 'error');
+            return;
+        }
+
+        const appName = document.getElementById('buildAppName').value.trim() || 'MyApp';
+        const packageName = document.getElementById('buildPackage').value.trim();
+        const version = document.getElementById('buildVersion').value.trim() || '1.0.0';
+        const versionCode = parseInt(document.getElementById('buildVersionCode').value) || 1;
+        const orientation = document.getElementById('buildOrientation').value;
+        const fullscreen = document.getElementById('buildFullscreen').checked;
+        const debug = document.getElementById('buildDebug').checked;
+        const signed = document.getElementById('buildSigned').checked;
+
+        if (!/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(packageName)) {
+            toast('Invalid package name. Use format: com.example.app', 'error');
+            return;
+        }
+
+        state.isBuilding = true;
+        const logs = document.getElementById('buildLogs');
+        logs.innerHTML = '';
+
+        const steps = [
+            { msg: 'Preparing project...', delay: 300 },
+            { msg: 'Project validated', delay: 200, type: 'success' },
+            { msg: 'Generating Android project structure...', delay: 400 },
+            { msg: 'Android project generated', delay: 200, type: 'success' },
+            { msg: 'Processing HTML/CSS/JS assets...', delay: 500 },
+            { msg: 'Assets processed', delay: 200, type: 'success' },
+            { msg: 'Configuring AndroidManifest.xml...', delay: 300 },
+            { msg: 'Manifest configured', delay: 200, type: 'success' },
+            { msg: 'Configuring permissions...', delay: 300 },
+            { msg: 'Permissions configured', delay: 200, type: 'success' },
+            { msg: 'Generating resources...', delay: 400 },
+            { msg: 'Resources generated', delay: 200, type: 'success' },
+            { msg: 'Running Gradle build...', delay: 800 },
+            { msg: 'Packaging APK...', delay: 500 },
+            { msg: 'APK packaged', delay: 200, type: 'success' },
+        ];
+
+        if (signed) {
+            steps.push({ msg: 'Signing APK with keystore...', delay: 600 });
+            steps.push({ msg: 'APK signed successfully', delay: 200, type: 'success' });
+        }
+
+        steps.push({ msg: 'Build completed successfully!', delay: 200, type: 'success' });
+
+        let idx = 0;
+        let progress = 0;
+
+        function log(msg, type) {
+            const div = document.createElement('div');
+            div.className = 'line' + (type ? ' ' + type : '');
+            div.textContent = msg;
+            logs.appendChild(div);
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function runStep() {
+            if (idx >= steps.length) {
+                state.isBuilding = false;
+                const size = (Math.random() * 4 + 1.5).toFixed(1);
+                log('', 'dim');
+                log(' APK: ' + appName + '-v' + version + '.apk', 'bold');
+                log(' Size: ' + size + ' MB', 'dim');
+                log(' Package: ' + packageName, 'dim');
+                log(' Built: ' + new Date().toLocaleString(), 'dim');
+                log('', 'dim');
+
+                // Update build count
+                const proj = state.projects.find(p => p.id === state.currentProject);
+                if (proj) {
+                    proj.buildCount = (proj.buildCount || 0) + 1;
+                    saveState();
+                }
+
+                const actions = document.createElement('div');
+                actions.className = 'build-actions';
+                actions.innerHTML = `
+                    <button class="btn btn-success btn-sm" onclick="toast('Install would open package installer','success')">Install</button>
+                    <button class="btn btn-sm" onclick="toast('Share would open share sheet','success')">Share</button>
+                    <button class="btn btn-sm" onclick="downloadAPK()">Download</button>
+                `;
+                logs.appendChild(actions);
+                logs.scrollTop = logs.scrollHeight;
+                toast('Build complete!', 'success');
+                return;
+            }
+
+            const step = steps[idx];
+            const isProgress = step.msg.includes('...') || step.msg.includes('█');
+
+            if (isProgress && !step.msg.includes('completed')) {
+                let p = 0;
+                const interval = setInterval(() => {
+                    p += Math.random() * 6 + 2;
+                    if (p > 100) p = 100;
+                    const bar = '█'.repeat(Math.floor(p / 5)) + '░'.repeat(20 - Math.floor(p / 5));
+                    const last = logs.lastElementChild;
+                    if (last && last.textContent.includes('...')) {
+                        last.textContent = ' ' + step.msg.replace('...', '') + ' ' + bar + ' ' + Math.floor(p) + '%';
+                    }
+                    if (p >= 100) {
+                        clearInterval(interval);
+                        log(' ' + step.msg.replace('...', '') + ' complete', 'success');
+                        idx++;
+                        setTimeout(runStep, 200);
+                    }
+                }, 150);
+                return;
+            }
+
+            log(' ' + step.msg, step.type || '');
+            idx++;
+            setTimeout(runStep, step.delay);
+        }
+
+        log(' Building ' + appName + ' v' + version, 'bold');
+        log(' Package: ' + packageName, 'dim');
+        log(' Version code: ' + versionCode, 'dim');
+        log(' Orientation: ' + orientation, 'dim');
+        if (fullscreen) log(' Fullscreen enabled', 'dim');
+        if (debug) log(' Debug build', 'dim');
+        if (signed) log(' Signed build', 'dim');
+        log('', 'dim');
+
+        setTimeout(runStep, 500);
+    };
+
+    window.downloadAPK = function() {
+        const name = document.getElementById('buildAppName').value || 'app';
+        const content = 'This would be the actual APK file in a real implementation.';
+        const blob = new Blob([content], { type: 'application/vnd.android.package-archive' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = name + '.apk';
+        a.click();
+        URL.revokeObjectURL(url);
+        toast('APK downloaded', 'success');
+    };
+
+    // ===== IMPORT ZIP =====
+    window.importZip = function() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.zip';
+        input.onchange = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const name = file.name.replace('.zip', '');
+            const id = 'proj_' + Date.now();
+            const project = {
+                id: id,
+                name: name,
+                packageName: 'com.appforge.' + name.toLowerCase().replace(/[^a-z0-9]/g, ''),
+                version: '1.0.0',
+                versionCode: 1,
+                created: new Date().toISOString(),
+                template: 'imported',
+                buildCount: 0
+            };
+            state.projects.push(project);
+            state.files[id] = {
+                'index.html': `<!-- Imported from ${file.name} -->\n<h1>${name}</h1>\n<p>ZIP import complete. Extract and detect index.html in production.</p>`
+            };
+            state.currentProject = id;
+            state.currentFile = 'index.html';
+            saveState();
+            toast('ZIP imported as "' + name + '"', 'success');
+            switchPanel('editor');
+            updateEditor();
+        };
+        input.click();
+    };
+
+    // ===== THEME =====
+    document.getElementById('themeSelect').addEventListener('change', function() {
+        const theme = this.value;
+        const root = document.documentElement;
+        if (theme === 'light') {
+            root.style.setProperty('--bg-primary', '#f5f5fa');
+            root.style.setProperty('--bg-secondary', '#ffffff');
+            root.style.setProperty('--bg-card', '#ececf2');
+            root.style.setProperty('--bg-editor', '#f0f0f5');
+            root.style.setProperty('--bg-input', '#f5f5fa');
+            root.style.setProperty('--text-primary', '#1a1a2e');
+            root.style.setProperty('--text-secondary', '#4a4a6a');
+            root.style.setProperty('--text-muted', '#8a8a9a');
+            root.style.setProperty('--border', '#d4d4e0');
+        } else {
+            root.style.setProperty('--bg-primary', '#0b0b12');
+            root.style.setProperty('--bg-secondary', '#13131f');
+            root.style.setProperty('--bg-card', '#1a1a2e');
+            root.style.setProperty('--bg-editor', '#0e0e16');
+            root.style.setProperty('--bg-input', '#0b0b12');
+            root.style.setProperty('--text-primary', '#eaeaf2');
+            root.style.setProperty('--text-secondary', '#9a9ab0');
+            root.style.setProperty('--text-muted', '#5a5a72');
+            root.style.setProperty('--border', '#28283e');
+        }
+    });
+
+    // ===== TOAST =====
+    function toast(msg, type) {
+        const existing = document.querySelector('.toast');
+        if (existing) existing.remove();
+        const el = document.createElement('div');
+        el.className = 'toast' + (type ? ' ' + type : '');
+        el.textContent = msg;
+        document.body.appendChild(el);
+        setTimeout(() => { if (el.parentNode) el.remove(); }, 3000);
+    }
+    window.toast = toast;
+
+    // ===== CLEAR DATA =====
+    window.clearAllData = function() {
+        if (!confirm('Delete ALL projects and data? This cannot be undone.')) return;
+        localStorage.removeItem('appforge_data');
+        state.projects = [];
+        state.files = {};
+        state.currentProject = null;
+        state.currentFile = 'index.html';
+        saveState();
+        updateUI();
+        toast('All data cleared', 'error');
+    };
+
+    // ===== KEYBOARD SHORTCUTS =====
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            if (document.getElementById('panel-editor').classList.contains('active')) {
+                saveFile();
+            }
+        }
+    });
+
+    // ===== INIT =====
+    loadState();
+    updateUI();
+    if (state.projects.length && !state.currentProject) {
+        state.currentProject = state.projects[0].id;
+        if (state.files[state.currentProject]) {
+            const keys = Object.keys(state.files[state.currentProject]);
+            state.currentFile = keys.length ? keys[0] : 'index.html';
+        }
+        saveState();
+    }
+    updateEditor();
+    console.log('AppForge ready');
+})();
+</script>
+
+</body>
+</html>
