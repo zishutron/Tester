@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Stardust — Settings</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: { colors: {
+    lightbg:'#f0f2f5', lightcard:'#ffffff', lightborder:'#e4e6eb',
+    darkbg:'#0b1528', darkcard:'#1e293b', accentblue:'#2563eb', neoncyan:'#06b6d4'
+  }}}};
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; transition: background .3s, color .3s; }
+  body.light-mode { background:#f0f2f5; color:#1a1a2e; }
+  body.light-mode .bg-darkbg { background:#f0f2f5 !important; }
+  body.light-mode .bg-darkcard { background:#ffffff !important; }
+  body.light-mode .border-slate-800 { border-color:#e4e6eb !important; }
+  body.light-mode .border-slate-900 { border-color:#d0d2d6 !important; }
+  body.light-mode .text-slate-100 { color:#1a1a2e !important; }
+  body.light-mode .text-slate-200 { color:#2d2d44 !important; }
+  body.light-mode .text-slate-300 { color:#3d3d5c !important; }
+  body.light-mode .text-slate-400 { color:#6b6b8a !important; }
+  body.light-mode .text-slate-500 { color:#8a8aa8 !important; }
+  body.light-mode .text-slate-600 { color:#a0a0b8 !important; }
+  body.light-mode .bg-slate-800 { background:#e8e8ee !important; }
+  body.light-mode .bg-slate-900 { background:#f5f5f8 !important; }
+  body.light-mode .bg-slate-200 { background:#e8e8ee !important; }
+  body.light-mode .bg-slate-800\/50 { background:rgba(232,232,238,.5) !important; }
+  body.light-mode .bg-slate-800\/60 { background:rgba(232,232,238,.6) !important; }
+  body.light-mode .bg-slate-100 { background:#f0f0f5 !important; }
+  body.light-mode .hover\:bg-slate-200:hover { background:#d8d8de !important; }
+  body.light-mode .hover\:bg-slate-700:hover { background:#c8c8d0 !important; }
+  body.light-mode .hover\:bg-slate-800:hover { background:#dddde4 !important; }
+  body.light-mode .border-slate-300 { border-color:#d0d2d6 !important; }
+  body.dark-mode { background:#0b1528; color:#f1f5f9; }
+  .hidden { display:none !important; }
+  .success-toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#065f46,#047857); border:1px solid #34d399; color:#fff; padding:14px 20px; border-radius:18px; z-index:200; box-shadow:0 20px 60px rgba(0,0,0,.5); max-width:90%; text-align:center; animation:toastIn .4s ease-out; }
+  @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(20px) scale(.9);} to { opacity:1; transform:translateX(-50%) translateY(0) scale(1);} }
+  .toggle-track { width:40px; height:24px; background:#cbd5e1; border-radius:999px; position:relative; transition: background .2s; }
+  .dark-mode .toggle-track { background:#475569; }
+  .toggle-dot { position:absolute; top:2px; left:2px; width:20px; height:20px; background:#fff; border-radius:50%; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+  .toggle-on .toggle-track { background:#06b6d4; }
+  .toggle-on .toggle-dot { transform: translateX(16px); }
+  .premium-theme-galaxy { background: linear-gradient(135deg,#0b0a1a,#1a0a3e,#2a0a5e) !important; border-color:#7c3aed !important; color:#e0d7ff !important; }
+  .premium-theme-sunset { background: linear-gradient(135deg,#1a0a0a,#4a1a0a,#7a2a0a) !important; border-color:#f97316 !important; color:#ffedd5 !important; }
+  .premium-theme-ocean { background: linear-gradient(135deg,#0a0a2a,#0a2a5a,#0a4a8a) !important; border-color:#0ea5e9 !important; color:#dbeafe !important; }
+  .premium-theme-forest { background: linear-gradient(135deg,#0a1a0a,#0a3a0a,#0a5a0a) !important; border-color:#22c55e !important; color:#dcfce7 !important; }
+  .premium-theme-rose { background: linear-gradient(135deg,#1a0a1a,#4a0a2a,#7a0a3a) !important; border-color:#ec4899 !important; color:#fce7f3 !important; }
+  .premium-theme-gold { background: linear-gradient(135deg,#1a1a0a,#3a2a0a,#5a3a0a) !important; border-color:#f59e0b !important; color:#fef3c7 !important; }
+  .premium-theme-ice { background: linear-gradient(135deg,#0a1a2a,#0a3a5a,#0a5a8a) !important; border-color:#67e8f9 !important; color:#cffafe !important; }
+  .premium-theme-almond { background: linear-gradient(135deg,#2a1a0a,#4a2a1a,#6a3a2a) !important; border-color:#d4a373 !important; color:#fefae0 !important; }
+  .premium-theme-royal { background: linear-gradient(135deg,#1a0a2a,#2a0a4a,#3a0a6a) !important; border-color:#8b5cf6 !important; color:#ede9fe !important; }
+  .premium-theme-cherry { background: linear-gradient(135deg,#2a0a0a,#4a0a0a,#6a0a0a) !important; border-color:#ef4444 !important; color:#fecaca !important; }
+  .premium-frame-gold { border:3px solid #f59e0b !important; box-shadow:0 0 40px rgba(245,158,11,.5) !important; }
+  .premium-frame-cyan { border:3px solid #06b6d4 !important; box-shadow:0 0 40px rgba(6,182,212,.5) !important; }
+  .premium-frame-pink { border:3px solid #ec4899 !important; box-shadow:0 0 40px rgba(236,72,153,.5) !important; }
+  .premium-frame-purple { border:3px solid #a855f7 !important; box-shadow:0 0 40px rgba(168,85,247,.5) !important; }
+  .premium-frame-emerald { border:3px solid #10b981 !important; box-shadow:0 0 40px rgba(16,185,129,.5) !important; }
+  .premium-frame-almond { border:3px solid #d4a373 !important; box-shadow:0 0 40px rgba(212,163,115,.5) !important; }
+  .premium-frame-royal { border:3px solid #8b5cf6 !important; box-shadow:0 0 40px rgba(139,92,246,.5) !important; }
+  .premium-frame-cherry { border:3px solid #ef4444 !important; box-shadow:0 0 40px rgba(239,68,68,.5) !important; }
+  .premium-frame-glow { border:3px solid rgba(124,58,237,.6) !important; box-shadow:0 0 40px rgba(124,58,237,.5) !important; }
+  .premium-frame-rainbow { border:3px solid transparent !important; background-image:linear-gradient(white,white),linear-gradient(to right,red,orange,yellow,green,blue,purple) !important; background-origin:padding-box,border-box !important; background-clip:padding-box,border-box !important; }
+</style>
+</head>
+<body class="light-mode bg-darkbg min-h-screen">
+
+<div class="max-w-md mx-auto w-full min-h-screen bg-darkbg pb-8 relative">
+  <header class="px-4 py-4 bg-darkcard border-b border-slate-900 flex items-center gap-3">
+    <a href="profile.html" class="p-2 bg-slate-800/50 rounded-full border border-slate-700 hover:bg-slate-700 transition">
+      <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    </a>
+    <h1 class="text-sm font-black uppercase tracking-widest text-slate-300">Settings Center</h1>
+  </header>
+
+  <main class="px-4 py-4 space-y-2">
+    <!-- Dark mode toggle -->
+    <div id="theme-row" class="bg-slate-800/60 border border-slate-800 p-3 rounded-xl flex justify-between items-center cursor-pointer">
+      <span class="text-xs font-semibold text-slate-300">Dark Mode</span>
+      <div class="toggle-track" id="theme-toggle"><div class="toggle-dot"></div></div>
+    </div>
+
+    <button data-page="edit-profile" class="w-full bg-slate-800/60 border border-slate-800 text-left p-3 rounded-xl text-xs font-semibold flex justify-between hover:bg-slate-800 transition text-slate-300">
+      <span>Edit Profile Parameters</span><span>→</span>
+    </button>
+    <button data-page="liked-posts" class="w-full bg-slate-800/60 border border-slate-800 text-left p-3 rounded-xl text-xs font-semibold flex justify-between hover:bg-slate-800 transition text-slate-300">
+      <span>Liked Publications</span><span>→</span>
+    </button>
+    <button data-page="commented-posts" class="w-full bg-slate-800/60 border border-slate-800 text-left p-3 rounded-xl text-xs font-semibold flex justify-between hover:bg-slate-800 transition text-slate-300">
+      <span>Commented Matrix Logs</span><span>→</span>
+    </button>
+    <a href="saved.html" class="w-full bg-slate-800/60 border border-slate-800 text-left p-3 rounded-xl text-xs font-semibold flex justify-between hover:bg-slate-800 transition text-slate-300 no-underline">
+      <span>Saved Content</span><span>→</span>
+    </a>
+    <button id="premium-btn" class="w-full bg-gradient-to-r from-amber-600 to-yellow-600 border border-amber-500 text-left p-3 rounded-xl text-xs font-bold text-white flex justify-between hover:from-amber-700 hover:to-yellow-700 transition">
+      <span>Premium Matrix Dashboard</span><span>→</span>
+    </button>
+
+    <a href="privacy.html" class="w-full bg-slate-800/60 border border-slate-800 text-left p-3 rounded-xl text-xs font-semibold flex justify-between hover:bg-slate-800 transition text-slate-300 no-underline">
+      <span>Privacy Policy</span><span>→</span>
+    </a>
+    <a href="terms.html" class="w-full bg-slate-800/60 border border-slate-800 text-left p-3 rounded-xl text-xs font-semibold flex justify-between hover:bg-slate-800 transition text-slate-300 no-underline">
+      <span>Terms of Service</span><span>→</span>
+    </a>
+
+    <button id="logout-btn" class="w-full bg-red-950/40 border border-red-900/40 text-left p-3 rounded-xl text-xs font-bold text-red-400 flex justify-between hover:bg-red-900/30 transition mt-4">
+      <span>Terminate Ecosystem Connection</span><span>⇥</span>
+    </button>
+    <button id="delete-btn" class="w-full bg-red-950/40 border border-red-900/40 text-left p-3 rounded-xl text-xs font-bold text-red-400 flex justify-between hover:bg-red-900/30 transition">
+      <span>Delete Account</span><span>×</span>
+    </button>
+  </main>
+</div>
+
+<!-- SUB SETTINGS -->
+<div id="sub-modal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50">
+  <div class="bg-darkcard w-full max-w-sm rounded-3xl border border-slate-800 p-5 flex flex-col max-h-[80vh]">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+      <h3 id="sub-title" class="text-xs font-bold uppercase tracking-widest text-cyan-400">Workspace</h3>
+      <button id="close-sub" class="text-slate-500 hover:text-white text-xs bg-slate-800 px-2.5 py-1 rounded-lg">Back</button>
+    </div>
+    <div id="sub-body" class="flex-1 text-xs overflow-y-auto custom-scrollbar space-y-2 pr-1 text-slate-300"></div>
+  </div>
+</div>
+
+<!-- PREMIUM DASHBOARD -->
+<div id="premium-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+  <div class="bg-darkcard w-full max-w-sm rounded-3xl border border-slate-800 p-5 shadow-2xl max-h-[85vh] overflow-y-auto custom-scrollbar">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xs font-bold uppercase tracking-wider text-amber-500">Premium Dashboard</h3>
+      <button id="close-premium" class="text-slate-500 hover:text-white text-xl leading-none">×</button>
+    </div>
+
+    <div id="premium-activate-wrap" class="space-y-3 text-center">
+      <p class="text-xs text-slate-400">Unlock 10 themes, 9 frames, 9 fonts and glowing profiles.</p>
+      <button id="activate-premium" class="w-full bg-gradient-to-r from-amber-500 to-yellow-500 py-3 rounded-xl text-xs font-black text-white shadow-lg">Activate Premium (30 days)</button>
+    </div>
+
+    <div id="premium-tweak-wrap" class="hidden space-y-4">
+      <div>
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Themes</p>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <button data-theme="premium-theme-galaxy" class="bg-slate-800/50 border border-purple-500/50 p-2.5 rounded-xl text-purple-300 hover:bg-slate-700 transition">Galaxy</button>
+          <button data-theme="premium-theme-sunset" class="bg-slate-800/50 border border-orange-500/50 p-2.5 rounded-xl text-orange-300 hover:bg-slate-700 transition">Sunset</button>
+          <button data-theme="premium-theme-ocean" class="bg-slate-800/50 border border-blue-500/50 p-2.5 rounded-xl text-blue-300 hover:bg-slate-700 transition">Ocean</button>
+          <button data-theme="premium-theme-forest" class="bg-slate-800/50 border border-green-500/50 p-2.5 rounded-xl text-green-300 hover:bg-slate-700 transition">Forest</button>
+          <button data-theme="premium-theme-rose" class="bg-slate-800/50 border border-pink-500/50 p-2.5 rounded-xl text-pink-300 hover:bg-slate-700 transition">Rose</button>
+          <button data-theme="premium-theme-gold" class="bg-slate-800/50 border border-amber-500/50 p-2.5 rounded-xl text-amber-300 hover:bg-slate-700 transition">Gold</button>
+          <button data-theme="premium-theme-ice" class="bg-slate-800/50 border border-cyan-500/50 p-2.5 rounded-xl text-cyan-300 hover:bg-slate-700 transition">Ice</button>
+          <button data-theme="premium-theme-almond" class="bg-slate-800/50 border border-amber-600/50 p-2.5 rounded-xl text-amber-200 hover:bg-slate-700 transition">Almond</button>
+          <button data-theme="premium-theme-royal" class="bg-slate-800/50 border border-purple-400/50 p-2.5 rounded-xl text-purple-200 hover:bg-slate-700 transition">Royal</button>
+          <button data-theme="premium-theme-cherry" class="bg-slate-800/50 border border-red-500/50 p-2.5 rounded-xl text-red-300 hover:bg-slate-700 transition">Cherry</button>
+        </div>
+      </div>
+
+      <div>
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Frames</p>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <button data-frame="premium-frame-glow" class="bg-slate-800/50 border border-slate-600 p-2.5 rounded-xl hover:bg-slate-700 transition">Glow</button>
+          <button data-frame="premium-frame-rainbow" class="bg-slate-800/50 border border-slate-600 p-2.5 rounded-xl hover:bg-slate-700 transition">Rainbow</button>
+          <button data-frame="premium-frame-gold" class="bg-slate-800/50 border border-slate-600 p-2.5 rounded-xl hover:bg-slate-700 transition">Gold</button>
+          <button data-frame="premium-frame-cyan" class="bg-slate-800/50 border border-slate-600 p-2.5 rounded-xl hover:bg-slate-700 transition">Cyan</button>
+          <button data-frame="premium-frame-pink" class="bg-slate-800/50 border border-slate-600 p-2.5 rounded-xl hover:bg-slate-700 transition">Pink</button>
+          <button data-frame="premium-frame-purple" class="bg-slate-800/50 border border-slate-600 p-2.5 rounded-xl hover:bg-slate-700 transition">Purple</button>
+          <button data-frame="premium-frame-emerald" class="bg-slate-800/50 border border-slate-600 p-2.5 rounded-xl hover:bg-slate-700 transition">Emerald</button>
+          <button data-frame="premium-frame-almond" class="bg-slate-800/50 border border-slate-600 p-2.5 rounded-xl hover:bg-slate-700 transition">Almond</button>
+          <button data-frame="premium-frame-royal" class="bg-slate-800/50 border border-slate-600 p-2.5 rounded-xl hover:bg-slate-700 transition">Royal</button>
+        </div>
+      </div>
+
+      <div>
+        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Fonts</p>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <button data-font="premium-font-elegant" class="bg-slate-800/50 border border-slate-600 p-2.5 rounded-xl hover:bg-slate-700 transition">Elegant</button>
+          <button data-font="premium-font-modern" class="bg-slate-800/50 border border-slate-600 p-2.5 rounded-xl hover:bg-slate-700 transition">Modern</button>
+          <button data-font="premium-font-bold" class="bg-slate-800/50 border border-slate-600 p-2.5 rounded-xl hover:bg-slate-700 transition">Bold</button>
+          <button data-font="premium-font-cursive" class="bg-slate-800/50 border border-slate-600 p-2.5 rounded-xl hover:bg-slate-700 transition">Cursive</button>
+          <button data-font="premium-font-mono" class="bg-slate-800/50 border border-slate-600 p-2.5 rounded-xl hover:bg-slate-700 transition">Mono</button>
+          <button data-font="premium-font-neon" class="bg-slate-800/50 border border-slate-600 p-2.5 rounded-xl hover:bg-slate-700 transition">Neon</button>
+          <button data-font="premium-font-soft" class="bg-slate-800/50 border border-slate-600 p-2.5 rounded-xl hover:bg-slate-700 transition">Soft</button>
+          <button data-font="premium-font-luxury" class="bg-slate-800/50 border border-slate-600 p-2.5 rounded-xl hover:bg-slate-700 transition">Luxury</button>
+          <button data-font="premium-font-futuristic" class="bg-slate-800/50 border border-slate-600 p-2.5 rounded-xl hover:bg-slate-700 transition">Futuristic</button>
+        </div>
+      </div>
+
+      <button id="clear-premium" class="w-full bg-slate-800 border border-slate-700 text-slate-300 py-2.5 rounded-xl text-xs font-bold mt-2">Reset to Default</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="success-toast hidden">
+  <p id="toast-title" class="font-bold text-sm"></p>
+  <p id="toast-message" class="text-xs text-emerald-200 mt-0.5"></p>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+  import { getDatabase, ref, get, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC5ufTBjot8i-PJCBkJtUpc50jJcYmzMBQ",
+    authDomain: "stardust-hub.firebaseapp.com",
+    databaseURL: "https://stardust-hub-default-rtdb.firebaseio.com",
+    projectId: "stardust-hub",
+    storageBucket: "stardust-hub.firebasestorage.app",
+    messagingSenderId: "672339143681",
+    appId: "1:672339143681:web:42d7e7f3fd923890aba400"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+  const FIXED_PROFESSIONS = ["Architect", "Software Engineer", "Systems Analyst", "Cybersecurity Specialist", "Creative Designer"];
+
+  // Theme handling
+  function applyTheme(theme) {
+    document.body.classList.remove('light-mode','dark-mode');
+    document.body.classList.add(theme + '-mode');
+    const toggle = document.getElementById('theme-toggle');
+    if (theme === 'dark') toggle.classList.add('toggle-on');
+    else toggle.classList.remove('toggle-on');
+    localStorage.setItem('stardust_theme', theme);
+  }
+  applyTheme(localStorage.getItem('stardust_theme') || 'light');
+
+  document.getElementById('theme-row').addEventListener('click', () => {
+    const cur = localStorage.getItem('stardust_theme') || 'light';
+    applyTheme(cur === 'light' ? 'dark' : 'light');
+  });
+
+  let ME = null;
+
+  function toast(title, msg) {
+    const el = document.getElementById('toast');
+    document.getElementById('toast-title').textContent = title;
+    document.getElementById('toast-message').textContent = msg;
+    el.classList.remove('hidden');
+    clearTimeout(window._toastTO);
+    window._toastTO = setTimeout(() => el.classList.add('hidden'), 3500);
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.replace('auth.html'); return; }
+
+    // Live watch on ME record so premium toggle reflects immediately
+    const usersSnap = await get(ref(db, 'users'));
+    const users = usersSnap.val() || {};
+    let myNodeKey = null;
+    for (const k of Object.keys(users)) {
+      if (users[k] && users[k].realFirebaseUID === user.uid) { ME = users[k]; myNodeKey = k; break; }
+    }
+    if (!ME) { window.location.replace('auth.html'); return; }
+
+    // Check premium expiry on load
+    if (ME.isPremium && ME.premiumExpiry && Date.now() > ME.premiumExpiry) {
+      await update(ref(db, `users/${myNodeKey}`), { isPremium: false, premiumTheme: '', premiumFrame: '', premiumFont: '' });
+      ME.isPremium = false; ME.premiumTheme = ''; ME.premiumFrame = ''; ME.premiumFont = '';
+      toast('Premium Expired', 'Your premium subscription has ended.');
+    }
+
+    // Watch for live premium updates
+    onValue(ref(db, `users/${myNodeKey}`), (s) => {
+      const data = s.val();
+      if (data) ME = data;
+    });
+
+    // Deep-link #premium
+    if (window.location.hash === '#premium') openPremium();
+  });
+
+  // Sub-settings
+  let subData = null;
+
+  document.querySelectorAll('[data-page]').forEach(btn => {
+    btn.addEventListener('click', () => openSub(btn.dataset.page));
+  });
+
+  async function openSub(type) {
+    const title = document.getElementById('sub-title');
+    const body = document.getElementById('sub-body');
+    body.innerHTML = '';
+
+    if (type === 'edit-profile') {
+      title.textContent = 'Edit Profile';
+      body.innerHTML = `
+        <div class="space-y-3">
+          <div><label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Display Name</label>
+            <input id="sub-name" type="text" value="${ME.name}" class="w-full bg-darkbg border border-slate-800 rounded-xl px-3 py-2 text-slate-200"></div>
+          <div><label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Profile Avatar</label>
+            <input id="sub-pfp" type="file" accept="image/*" class="w-full text-slate-500 text-[11px]"></div>
+          <div><label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Biography</label>
+            <textarea id="sub-bio" class="w-full bg-darkbg border border-slate-800 rounded-xl px-3 py-2 resize-none h-20 text-slate-200">${ME.bio || ''}</textarea></div>
+          <div><label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Profession</label>
+            <select id="sub-prof" class="w-full bg-darkbg border border-slate-800 rounded-xl px-3 py-2 text-slate-200">
+              <option value="">(None)</option>
+              ${FIXED_PROFESSIONS.map(p => `<option value="${p}" ${ME.profession === p ? 'selected' : ''}>${p}</option>`).join('')}
+            </select></div>
+          <button id="sub-save" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl mt-2">Save Changes</button>
+        </div>
+      `;
+      document.getElementById('sub-save').addEventListener('click', saveProfileEdit);
+    } else if (type === 'liked-posts') {
+      title.textContent = 'Liked Publications';
+      const snap = await get(ref(db, 'publications'));
+      const data = snap.val() || {};
+      const liked = Object.keys(data).map(k => data[k]).filter(p => p && p.likes && p.likes[ME.uid]);
+      if (!liked.length) body.innerHTML = `<p class="text-center text-slate-600">No liked publications yet.</p>`;
+      else {
+        liked.forEach(p => {
+          body.innerHTML += `
+            <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-xl mb-1">
+              <p class="text-slate-300">${p.text || ''}</p>
+              ${p.image ? `<div class="mt-1 rounded-lg overflow-hidden max-h-24"><img src="${p.image}" class="w-full h-full object-cover" loading="lazy"></div>` : ''}
+            </div>`;
+        });
+      }
+    } else if (type === 'commented-posts') {
+      title.textContent = 'Commented Logs';
+      const snap = await get(ref(db, 'publications'));
+      const data = snap.val() || {};
+      let found = [];
+      Object.keys(data).forEach(k => {
+        const p = data[k];
+        if (p && p.comments) {
+          Object.values(p.comments).forEach(cm => {
+            if (cm.authorUID === ME.uid) found.push({ post: p.text, comment: cm.text });
+          });
+        }
+      });
+      if (!found.length) body.innerHTML = `<p class="text-center text-slate-600">No comments yet.</p>`;
+      else found.forEach(c => {
+        body.innerHTML += `
+          <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-xl mb-1">
+            <p class="text-slate-500 text-[10px]">On: ${c.post}</p>
+            <p class="text-slate-300 mt-1">${c.comment}</p>
+          </div>`;
+      });
+    }
+
+    document.getElementById('sub-modal').classList.remove('hidden');
+  }
+
+  async function saveProfileEdit() {
+    const name = document.getElementById('sub-name').value.trim();
+    const bio = document.getElementById('sub-bio').value.trim();
+    const prof = document.getElementById('sub-prof').value;
+    const fileInput = document.getElementById('sub-pfp');
+
+    if (!name) return toast('Error', 'Name is required');
+
+    const commit = async (pfpBase64) => {
+      const payload = { name, bio, profession: prof };
+      if (pfpBase64) payload.pfp = pfpBase64;
+      await update(ref(db, `users/${ME.uid}`), payload);
+      document.getElementById('sub-modal').classList.add('hidden');
+      toast('Saved', 'Profile updated');
+    };
+
+    if (fileInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => commit(e.target.result);
+      reader.readAsDataURL(fileInput.files[0]);
+    } else {
+      commit(null);
+    }
+  }
+
+  document.getElementById('close-sub').addEventListener('click', () => {
+    document.getElementById('sub-modal').classList.add('hidden');
+  });
+
+  // Premium
+  function openPremium() {
+    const modal = document.getElementById('premium-modal');
+    modal.classList.remove('hidden');
+    const activateWrap = document.getElementById('premium-activate-wrap');
+    const tweakWrap = document.getElementById('premium-tweak-wrap');
+    if (ME.isPremium) {
+      activateWrap.classList.add('hidden');
+      tweakWrap.classList.remove('hidden');
+    } else {
+      activateWrap.classList.remove('hidden');
+      tweakWrap.classList.add('hidden');
+    }
+  }
+  document.getElementById('premium-btn').addEventListener('click', openPremium);
+  document.getElementById('close-premium').addEventListener('click', () => {
+    document.getElementById('premium-modal').classList.add('hidden');
+  });
+
+  document.getElementById('activate-premium').addEventListener('click', async () => {
+    const expiry = Date.now() + 30*24*60*60*1000;
+    await update(ref(db, `users/${ME.uid}`), { isPremium: true, premiumExpiry: expiry });
+    toast('Premium Activated', 'You now have 30 days of premium');
+    setTimeout(openPremium, 300);
+  });
+
+  document.querySelectorAll('[data-theme]').forEach(b => {
+    b.addEventListener('click', async () => {
+      await update(ref(db, `users/${ME.uid}`), { premiumTheme: b.dataset.theme });
+      toast('Applied', 'Theme updated');
+    });
+  });
+  document.querySelectorAll('[data-frame]').forEach(b => {
+    b.addEventListener('click', async () => {
+      await update(ref(db, `users/${ME.uid}`), { premiumFrame: b.dataset.frame });
+      toast('Applied', 'Frame updated');
+    });
+  });
+  document.querySelectorAll('[data-font]').forEach(b => {
+    b.addEventListener('click', async () => {
+      await update(ref(db, `users/${ME.uid}`), { premiumFont: b.dataset.font });
+      toast('Applied', 'Font updated');
+    });
+  });
+  document.getElementById('clear-premium').addEventListener('click', async () => {
+    await update(ref(db, `users/${ME.uid}`), { premiumTheme: '', premiumFrame: '', premiumFont: '' });
+    toast('Reset', 'Premium styles cleared');
+  });
+
+  // Logout
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    if (!confirm('Sign out of Stardust?')) return;
+    await signOut(auth);
+    localStorage.removeItem('STARDUST_CORE_DB_PROD');
+    window.location.replace('auth.html');
+  });
+
+  // Delete account
+  document.getElementById('delete-btn').addEventListener('click', async () => {
+    if (!confirm('Permanently delete your account? All posts, reels and data will be lost.')) return;
+    if (!confirm('Are you absolutely sure? This cannot be undone.')) return;
+    const user = auth.currentUser;
+    if (!user) return;
+    try {
+      await remove(ref(db, 'users/' + ME.uid));
+      await deleteUser(user);
+      localStorage.removeItem('STARDUST_CORE_DB_PROD');
+      toast('Deleted', 'Account permanently removed');
+      setTimeout(() => window.location.replace('auth.html'), 1200);
+    } catch (e) {
+      if (e.code === 'auth/requires-recent-login') {
+        toast('Error', 'Please sign out and sign in again, then retry.');
+      } else {
+        toast('Error', e.message);
+      }
+    }
+  });
+</script>
+</body>
+</html>
