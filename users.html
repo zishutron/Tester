@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Stardust — Users</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: { colors: {
+    lightbg:'#f0f2f5', lightcard:'#ffffff', lightborder:'#e4e6eb',
+    darkbg:'#0b1528', darkcard:'#1e293b', accentblue:'#2563eb', neoncyan:'#06b6d4'
+  }}}};
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; transition: background .3s, color .3s; }
+  body.light-mode { background:#f0f2f5; color:#1a1a2e; }
+  body.light-mode .bg-darkbg { background:#f0f2f5 !important; }
+  body.light-mode .bg-darkcard { background:#ffffff !important; }
+  body.light-mode .border-slate-800 { border-color:#e4e6eb !important; }
+  body.light-mode .border-slate-900 { border-color:#d0d2d6 !important; }
+  body.light-mode .text-slate-100 { color:#1a1a2e !important; }
+  body.light-mode .text-slate-200 { color:#2d2d44 !important; }
+  body.light-mode .text-slate-300 { color:#3d3d5c !important; }
+  body.light-mode .text-slate-400 { color:#6b6b8a !important; }
+  body.light-mode .text-slate-500 { color:#8a8aa8 !important; }
+  body.light-mode .text-slate-600 { color:#a0a0b8 !important; }
+  body.light-mode .bg-slate-800 { background:#e8e8ee !important; }
+  body.light-mode .bg-slate-900 { background:#f5f5f8 !important; }
+  body.light-mode .bg-slate-200 { background:#e8e8ee !important; }
+  body.light-mode .bg-slate-800\/50 { background:rgba(232,232,238,.5) !important; }
+  body.light-mode .hover\:bg-slate-800:hover { background:#dddde4 !important; }
+  body.light-mode .border-slate-300 { border-color:#d0d2d6 !important; }
+  body.dark-mode { background:#0b1528; color:#f1f5f9; }
+  .hidden { display:none !important; }
+  .tab-btn { transition:all .25s ease; }
+  .tab-btn.active { background:#1e293b; color:#06b6d4; }
+  .tab-btn:not(.active) { color:#64748b; }
+  body.light-mode .tab-btn.active { background:#e8e8ee; color:#2563eb; }
+  body.light-mode .tab-btn:not(.active) { color:#6b6b8a; }
+  .success-toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#065f46,#047857); border:1px solid #34d399; color:#fff; padding:14px 20px; border-radius:18px; z-index:200; box-shadow:0 20px 60px rgba(0,0,0,.5); max-width:90%; text-align:center; animation:toastIn .4s ease-out; }
+  @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(20px) scale(.9);} to { opacity:1; transform:translateX(-50%) translateY(0) scale(1);} }
+  .skeleton { background:linear-gradient(90deg,#1e293b 25%,#2a3a4a 50%,#1e293b 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; border-radius:12px; }
+  body.light-mode .skeleton { background:linear-gradient(90deg,#e8e8ee 25%,#f0f0f5 50%,#e8e8ee 75%); background-size:200% 100%; }
+  @keyframes shimmer { 0% { background-position:-200% 0; } 100% { background-position:200% 0; } }
+</style>
+</head>
+<body class="light-mode bg-darkbg min-h-screen">
+
+<div class="max-w-md mx-auto w-full min-h-screen bg-darkbg pb-24 relative">
+  <header class="px-4 py-4 bg-darkcard border-b border-slate-900 flex items-center gap-3">
+    <a href="main.html" class="p-2 bg-slate-800/50 rounded-full border border-slate-700 hover:bg-slate-700 transition">
+      <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    </a>
+    <h1 class="text-sm font-black uppercase tracking-widest text-slate-300">Users Network</h1>
+  </header>
+
+  <div class="px-4 pt-4">
+    <div class="flex bg-darkcard p-1 rounded-xl border border-slate-800 text-xs">
+      <button data-tab="friends" class="tab-btn active flex-1 py-2 rounded-lg font-bold">Friends</button>
+      <button data-tab="discover" class="tab-btn flex-1 py-2 rounded-lg font-bold">Discover</button>
+      <button data-tab="requests" class="tab-btn flex-1 py-2 rounded-lg font-bold">Requests</button>
+    </div>
+  </div>
+
+  <main class="px-4 py-4">
+    <div id="loading" class="space-y-3">
+      <div class="skeleton h-16"></div>
+      <div class="skeleton h-16"></div>
+      <div class="skeleton h-16"></div>
+    </div>
+    <div id="friends-view" class="space-y-2 hidden"></div>
+    <div id="discover-view" class="space-y-2 hidden"></div>
+    <div id="requests-view" class="space-y-2 hidden"></div>
+  </main>
+
+  <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-darkcard/95 backdrop-blur-md border-t border-slate-900 h-16 flex justify-around items-center z-40">
+    <a href="main.html" class="text-slate-500 hover:text-cyan-400 flex flex-col items-center flex-1 py-1">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+    </a>
+    <a href="chat.html" class="text-slate-500 hover:text-cyan-400 flex flex-col items-center flex-1 py-1">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+    </a>
+    <a href="reels.html" class="text-slate-500 hover:text-pink-400 flex flex-col items-center flex-1 py-1">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+    </a>
+    <a href="search.html" class="text-slate-500 hover:text-cyan-400 flex flex-col items-center flex-1 py-1">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+    </a>
+    <a href="profile.html" class="text-slate-500 hover:text-cyan-400 flex flex-col items-center flex-1 py-1">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7 7z"/></svg>
+    </a>
+  </nav>
+</div>
+
+<div id="toast" class="success-toast hidden">
+  <p id="toast-title" class="font-bold text-sm"></p>
+  <p id="toast-message" class="text-xs text-emerald-200 mt-0.5"></p>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+  import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC5ufTBjot8i-PJCBkJtUpc50jJcYmzMBQ",
+    authDomain: "stardust-hub.firebaseapp.com",
+    databaseURL: "https://stardust-hub-default-rtdb.firebaseio.com",
+    projectId: "stardust-hub",
+    storageBucket: "stardust-hub.firebasestorage.app",
+    messagingSenderId: "672339143681",
+    appId: "1:672339143681:web:42d7e7f3fd923890aba400"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+  const theme = localStorage.getItem('stardust_theme') || 'light';
+  document.body.classList.remove('light-mode','dark-mode');
+  document.body.classList.add(theme + '-mode');
+
+  let ME = null;
+  let PEERS = [];
+  let FRIENDSHIPS = {};
+
+  function toast(title, msg) {
+    const el = document.getElementById('toast');
+    document.getElementById('toast-title').textContent = title;
+    document.getElementById('toast-message').textContent = msg;
+    el.classList.remove('hidden');
+    clearTimeout(window._toastTO);
+    window._toastTO = setTimeout(() => el.classList.add('hidden'), 3500);
+  }
+
+  document.querySelectorAll('[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const t = btn.dataset.tab;
+      document.getElementById('friends-view').classList.toggle('hidden', t !== 'friends');
+      document.getElementById('discover-view').classList.toggle('hidden', t !== 'discover');
+      document.getElementById('requests-view').classList.toggle('hidden', t !== 'requests');
+    });
+  });
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.replace('auth.html'); return; }
+
+    const [usersSnap, friendsSnap] = await Promise.all([
+      get(ref(db, 'users')),
+      get(ref(db, 'friendships'))
+    ]);
+    const usersData = usersSnap.val() || {};
+    PEERS = Object.keys(usersData).map(k => usersData[k]).filter(u => u && u.uid);
+    for (const u of PEERS) {
+      if (u.realFirebaseUID === user.uid) { ME = u; break; }
+    }
+    if (!ME) { window.location.replace('auth.html'); return; }
+    FRIENDSHIPS = friendsSnap.val() || {};
+
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('friends-view').classList.remove('hidden');
+    renderAll();
+  });
+
+  function renderAll() {
+    renderFriends();
+    renderDiscover();
+    renderRequests();
+  }
+
+  function renderFriends() {
+    const c = document.getElementById('friends-view');
+    c.innerHTML = '';
+    const myUID = ME.uid;
+    const friends = PEERS.filter(p => p.uid !== myUID && FRIENDSHIPS[`bond_${myUID}_and_${p.uid}`] === 'confirmed');
+
+    if (!friends.length) {
+      c.innerHTML = `<p class="text-[11px] text-slate-600 text-center py-8">You haven't connected with anyone yet.</p>`;
+      return;
+    }
+    friends.forEach(peer => c.appendChild(buildUserRow(peer, 'friend')));
+  }
+
+  function renderDiscover() {
+    const c = document.getElementById('discover-view');
+    c.innerHTML = '';
+    const myUID = ME.uid;
+    const strangers = PEERS.filter(p => {
+      if (p.uid === myUID) return false;
+      if (FRIENDSHIPS[`bond_${myUID}_and_${p.uid}`] === 'confirmed') return false;
+      if (FRIENDSHIPS[`req_${myUID}_to_${p.uid}`] === 'pending') return false;
+      if (FRIENDSHIPS[`req_${p.uid}_to_${myUID}`] === 'pending') return false;
+      return true;
+    });
+
+    if (!strangers.length) {
+      c.innerHTML = `<p class="text-[11px] text-slate-600 text-center py-8">No new users to discover right now.</p>`;
+      return;
+    }
+    strangers.slice(0, 50).forEach(peer => c.appendChild(buildUserRow(peer, 'discover')));
+  }
+
+  function renderRequests() {
+    const c = document.getElementById('requests-view');
+    c.innerHTML = '';
+    const myUID = ME.uid;
+    const incoming = PEERS.filter(p => FRIENDSHIPS[`req_${p.uid}_to_${myUID}`] === 'pending');
+
+    if (!incoming.length) {
+      c.innerHTML = `<p class="text-[11px] text-slate-600 text-center py-8">No pending friend requests.</p>`;
+      return;
+    }
+    incoming.forEach(peer => c.appendChild(buildUserRow(peer, 'incoming')));
+  }
+
+  function buildUserRow(peer, mode) {
+    const myUID = ME.uid;
+    const row = document.createElement('div');
+    row.className = 'bg-darkcard p-3 rounded-xl border border-slate-800 flex justify-between items-center text-xs';
+
+    let actions = '';
+    if (mode === 'friend') {
+      actions = `
+        <button data-chat class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl">Chat</button>
+      `;
+    } else if (mode === 'discover') {
+      actions = `
+        <button data-connect class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl">Connect</button>
+      `;
+    } else if (mode === 'incoming') {
+      actions = `
+        <div class="flex items-center gap-2">
+          <button data-accept class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl">Accept</button>
+          <button data-deny class="bg-slate-800 text-slate-400 text-[10px] font-bold px-3 py-1.5 rounded-xl border border-slate-700">Deny</button>
+        </div>
+      `;
+    }
+
+    row.innerHTML = `
+      <div class="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" data-goto>
+        <img src="${peer.pfp || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-9 h-9 rounded-full object-cover" loading="lazy">
+        <div class="min-w-0">
+          <p class="font-bold text-slate-200 truncate">${peer.name}</p>
+          <p class="text-[9px] text-slate-500 font-mono">@${peer.uid}</p>
+        </div>
+      </div>
+      <div>${actions}</div>
+    `;
+
+    row.querySelector('[data-goto]').addEventListener('click', () => {
+      window.location.href = 'profile.html?uid=' + encodeURIComponent(peer.uid);
+    });
+
+    const chatBtn = row.querySelector('[data-chat]');
+    if (chatBtn) chatBtn.addEventListener('click', () => {
+      window.location.href = 'chat.html?uid=' + encodeURIComponent(peer.uid);
+    });
+
+    const connectBtn = row.querySelector('[data-connect]');
+    if (connectBtn) connectBtn.addEventListener('click', async () => {
+      await set(ref(db, `friendships/req_${myUID}_to_${peer.uid}`), 'pending');
+      FRIENDSHIPS[`req_${myUID}_to_${peer.uid}`] = 'pending';
+      toast('Request Sent', 'Friend request sent');
+      renderDiscover();
+      if (peer.uid) {
+        // Fire-and-forget notification
+        try {
+          const nSnap = await get(ref(db, `users/${peer.uid}/notifications`));
+          const arr = Array.isArray(nSnap.val()) ? nSnap.val() : [];
+          arr.unshift({
+            id: 'n_' + Date.now(),
+            type: 'friend_request',
+            message: `${ME.name} sent you a friend request`,
+            targetUserId: peer.uid,
+            sourceUserId: myUID,
+            timestamp: Date.now(),
+            read: false
+          });
+          const cutoff = Date.now() - 7*24*60*60*1000;
+          await set(ref(db, `users/${peer.uid}/notifications`), arr.filter(n => n.timestamp > cutoff).slice(0,50));
+        } catch (e) { /* silent */ }
+      }
+    });
+
+    const acceptBtn = row.querySelector('[data-accept]');
+    if (acceptBtn) acceptBtn.addEventListener('click', async () => {
+      const updates = {};
+      updates[`friendships/req_${peer.uid}_to_${myUID}`] = null;
+      updates[`friendships/bond_${myUID}_and_${peer.uid}`] = 'confirmed';
+      updates[`friendships/bond_${peer.uid}_and_${myUID}`] = 'confirmed';
+      await update(ref(db), updates);
+      FRIENDSHIPS[`bond_${myUID}_and_${peer.uid}`] = 'confirmed';
+      FRIENDSHIPS[`bond_${peer.uid}_and_${myUID}`] = 'confirmed';
+      toast('Connected', 'Friend request accepted');
+      renderAll();
+    });
+
+    const denyBtn = row.querySelector('[data-deny]');
+    if (denyBtn) denyBtn.addEventListener('click', async () => {
+      await set(ref(db, `friendships/req_${peer.uid}_to_${myUID}`), null);
+      delete FRIENDSHIPS[`req_${peer.uid}_to_${myUID}`];
+      toast('Denied', 'Friend request denied');
+      renderAll();
+    });
+
+    return row;
+  }
+</script>
+</body>
+</html>
