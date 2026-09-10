@@ -32,6 +32,7 @@
   body.light-mode .hover\:bg-slate-700:hover { background:#c8c8d0 !important; }
   body.light-mode .hover\:bg-slate-800:hover { background:#dddde4 !important; }
   body.light-mode .border-slate-300 { border-color:#d0d2d6 !important; }
+  body.light-mode .border-slate-700 { border-color:#d0d2d6 !important; }
   body.dark-mode { background:#0b1528; color:#f1f5f9; }
   .hidden { display:none !important; }
   .spinner { border:2px solid rgba(255,255,255,.15); width:16px; height:16px; border-radius:50%; border-left-color:#fff; animation:spin .8s linear infinite; }
@@ -101,8 +102,8 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/auth.js".replace('/auth.js','/firebase-auth.js');
-  import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+  import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyC5ufTBjot8i-PJCBkJtUpc50jJcYmzMBQ",
@@ -125,6 +126,7 @@
   let USERS = [];
   let POSTS = [];
   let FRIENDS = {};
+  let loaded = false;
 
   function toast(title, msg) {
     const el = document.getElementById('toast');
@@ -135,33 +137,35 @@
     window._toastTO = setTimeout(() => el.classList.add('hidden'), 3500);
   }
 
-  // ---- Auth gate + one-shot cache of users & posts ----
   onAuthStateChanged(auth, async (user) => {
     if (!user) { window.location.replace('auth.html'); return; }
 
-    const [usersSnap, postsSnap, friendsSnap] = await Promise.all([
-      get(ref(db, 'users')),
-      get(ref(db, 'publications')),
-      get(ref(db, 'friendships'))
-    ]);
+    // Load users & posts independently
+    try {
+      const usersSnap = await get(ref(db, 'users'));
+      const data = usersSnap.val() || {};
+      USERS = Object.keys(data).map(k => data[k]).filter(u => u && u.uid);
+      for (const u of USERS) {
+        if (u.realFirebaseUID === user.uid) { ME = u; break; }
+      }
+    } catch (e) { console.error('users load failed:', e); }
 
-    const usersData = usersSnap.val() || {};
-    USERS = Object.keys(usersData).map(k => usersData[k]).filter(u => u && u.uid);
-    for (const u of USERS) {
-      if (u.realFirebaseUID === user.uid) { ME = u; break; }
-    }
-    if (!ME) { window.location.replace('auth.html'); return; }
+    try {
+      const postsSnap = await get(ref(db, 'publications'));
+      const data = postsSnap.val() || {};
+      POSTS = Object.keys(data).map(k => data[k]).filter(p => p && (p.text || p.image));
+    } catch (e) { console.error('posts load failed:', e); }
 
-    const postsData = postsSnap.val() || {};
-    POSTS = Object.keys(postsData).map(k => postsData[k]).filter(p => p && (p.text || p.image));
+    try {
+      const friendsSnap = await get(ref(db, 'friendships'));
+      FRIENDS = friendsSnap.val() || {};
+    } catch (e) { console.error('friends load failed:', e); }
 
-    FRIENDS = friendsSnap.val() || {};
-
-    // Auto focus
+    loaded = true;
     document.getElementById('search-input').focus();
+    console.log('Search data ready — users:', USERS.length, 'posts:', POSTS.length, 'me:', ME ? ME.uid : 'null');
   });
 
-  // ---- Debounced search ----
   let debounceTimer = null;
   const input = document.getElementById('search-input');
   const spinner = document.getElementById('search-spinner');
@@ -169,12 +173,9 @@
   input.addEventListener('input', () => {
     clearTimeout(debounceTimer);
     const q = input.value.trim().toLowerCase();
-    if (!q) {
-      renderEmptyHint();
-      return;
-    }
+    if (!q) { renderEmptyHint(); return; }
     spinner.classList.remove('hidden');
-    debounceTimer = setTimeout(() => runSearch(q), 300);
+    debounceTimer = setTimeout(() => runSearch(q), 250);
   });
 
   function renderEmptyHint() {
@@ -190,16 +191,26 @@
     document.getElementById('hint').classList.add('hidden');
     document.getElementById('empty').classList.add('hidden');
 
-    // Users match
-    const matchedUsers = USERS.filter(u =>
-      u.uid !== ME.uid &&
-      (u.uid.includes(q) || (u.name || '').toLowerCase().includes(q))
-    ).slice(0, 20);
+    if (!loaded) {
+      document.getElementById('hint').classList.remove('hidden');
+      document.getElementById('hint').innerHTML = `<p class="text-xs text-slate-500">Loading data, please wait...</p>`;
+      return;
+    }
 
-    // Posts match
-    const matchedPosts = POSTS.filter(p =>
-      (p.text || '').toLowerCase().includes(q)
-    ).sort((a,b) => b.timestamp - a.timestamp).slice(0, 30);
+    const myUID = ME ? ME.uid : null;
+
+    const matchedUsers = USERS.filter(u => {
+      if (!u || !u.uid) return false;
+      if (u.uid === myUID) return false;
+      return (u.name || '').toLowerCase().includes(q) || u.uid.includes(q);
+    }).slice(0, 30);
+
+    const matchedPosts = POSTS.filter(p => {
+      if (!p) return false;
+      return (p.text || '').toLowerCase().includes(q)
+        || (p.authorName || '').toLowerCase().includes(q)
+        || (p.authorUID || '').includes(q);
+    }).sort((a,b) => (b.timestamp||0) - (a.timestamp||0)).slice(0, 40);
 
     if (!matchedUsers.length && !matchedPosts.length) {
       document.getElementById('results-users').classList.add('hidden');
@@ -208,7 +219,6 @@
       return;
     }
 
-    // Users
     const usersBox = document.getElementById('results-users');
     const usersList = document.getElementById('users-list');
     usersList.innerHTML = '';
@@ -217,7 +227,6 @@
       matchedUsers.forEach(u => usersList.appendChild(buildUserRow(u)));
     } else usersBox.classList.add('hidden');
 
-    // Posts
     const postsBox = document.getElementById('results-posts');
     const postsList = document.getElementById('posts-list');
     postsList.innerHTML = '';
@@ -228,24 +237,26 @@
   }
 
   function buildUserRow(u) {
-    const isFriend = FRIENDS[`bond_${ME.uid}_and_${u.uid}`] === 'confirmed';
-    const sent = FRIENDS[`req_${ME.uid}_to_${u.uid}`] === 'pending';
-    const incoming = FRIENDS[`req_${u.uid}_to_${ME.uid}`] === 'pending';
+    const myUID = ME ? ME.uid : null;
+    const isFriend = myUID && FRIENDS[`bond_${myUID}_and_${u.uid}`] === 'confirmed';
+    const sent = myUID && FRIENDS[`req_${myUID}_to_${u.uid}`] === 'pending';
+    const incoming = myUID && FRIENDS[`req_${u.uid}_to_${myUID}`] === 'pending';
 
     const card = document.createElement('div');
     card.className = 'bg-darkcard p-3 rounded-xl border border-slate-800 flex justify-between items-center text-xs';
 
     let action = '';
-    if (isFriend) action = `<span class="text-[10px] bg-slate-800 text-cyan-400 font-bold px-3 py-1.5 rounded-xl border border-slate-700">Verified</span>`;
+    if (!myUID) action = `<span class="text-[10px] text-slate-600">—</span>`;
+    else if (isFriend) action = `<span class="text-[10px] bg-slate-800 text-cyan-400 font-bold px-3 py-1.5 rounded-xl border border-slate-700">Verified</span>`;
     else if (sent) action = `<span class="text-[10px] bg-slate-800 text-slate-500 px-3 py-1.5 rounded-xl">Sent</span>`;
     else if (incoming) action = `<button data-accept class="bg-emerald-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl">Accept</button>`;
-    else action = `<button data-connect class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl transition">Connect</button>`;
+    else action = `<button data-connect class="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl">Connect</button>`;
 
     card.innerHTML = `
       <div class="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" data-goto>
-        <img src="${u.pfp || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-9 h-9 rounded-full object-cover">
+        <img src="${u.pfp || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-9 h-9 rounded-full object-cover" loading="lazy">
         <div class="min-w-0">
-          <p class="font-bold text-slate-200 truncate">${u.name}</p>
+          <p class="font-bold text-slate-200 truncate">${u.name || 'Unknown'}</p>
           <p class="text-[9px] text-slate-500 font-mono">@${u.uid}</p>
         </div>
       </div>
@@ -258,22 +269,21 @@
 
     const connectBtn = card.querySelector('[data-connect]');
     if (connectBtn) connectBtn.addEventListener('click', async () => {
-      await set(ref(db, `friendships/req_${ME.uid}_to_${u.uid}`), 'pending');
+      await set(ref(db, `friendships/req_${myUID}_to_${u.uid}`), 'pending');
+      FRIENDS[`req_${myUID}_to_${u.uid}`] = 'pending';
       toast('Request Sent', 'Friend request sent');
-      FRIENDS[`req_${ME.uid}_to_${u.uid}`] = 'pending';
       connectBtn.outerHTML = `<span class="text-[10px] bg-slate-800 text-slate-500 px-3 py-1.5 rounded-xl">Sent</span>`;
     });
 
     const acceptBtn = card.querySelector('[data-accept]');
     if (acceptBtn) acceptBtn.addEventListener('click', async () => {
-      const { update } = await import("https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js");
       const updates = {};
-      updates[`friendships/req_${u.uid}_to_${ME.uid}`] = null;
-      updates[`friendships/bond_${ME.uid}_and_${u.uid}`] = 'confirmed';
-      updates[`friendships/bond_${u.uid}_and_${ME.uid}`] = 'confirmed';
+      updates[`friendships/req_${u.uid}_to_${myUID}`] = null;
+      updates[`friendships/bond_${myUID}_and_${u.uid}`] = 'confirmed';
+      updates[`friendships/bond_${u.uid}_and_${myUID}`] = 'confirmed';
       await update(ref(db), updates);
+      FRIENDS[`bond_${myUID}_and_${u.uid}`] = 'confirmed';
       toast('Connected', 'Friend request accepted');
-      FRIENDS[`bond_${ME.uid}_and_${u.uid}`] = 'confirmed';
       acceptBtn.outerHTML = `<span class="text-[10px] bg-slate-800 text-cyan-400 font-bold px-3 py-1.5 rounded-xl border border-slate-700">Verified</span>`;
     });
 
@@ -286,14 +296,14 @@
     card.innerHTML = `
       <div class="flex items-center gap-2 cursor-pointer" data-author>
         <img src="${p.authorAvatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-6 h-6 rounded-full object-cover">
-        <span class="text-[10px] text-slate-400 font-bold">${p.authorName}</span>
+        <span class="text-[10px] text-slate-400 font-bold">${p.authorName || 'Unknown'}</span>
       </div>
       ${p.text ? `<p class="text-slate-300 leading-relaxed">${p.text}</p>` : ''}
       ${p.image ? `<div class="rounded-lg overflow-hidden max-h-32 border border-slate-800"><img src="${p.image}" class="w-full h-full object-cover" loading="lazy"></div>` : ''}
-      <p class="text-[9px] text-slate-600 font-mono">@${p.authorUID} • ${new Date(p.timestamp).toLocaleDateString()}</p>
+      <p class="text-[9px] text-slate-600 font-mono">@${p.authorUID} • ${new Date(p.timestamp || 0).toLocaleDateString()}</p>
     `;
     card.querySelector('[data-author]').addEventListener('click', () => {
-      if (p.authorUID === ME.uid) window.location.href = 'profile.html';
+      if (ME && p.authorUID === ME.uid) window.location.href = 'profile.html';
       else window.location.href = 'profile.html?uid=' + encodeURIComponent(p.authorUID);
     });
     return card;
