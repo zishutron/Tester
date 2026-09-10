@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Stardust — Reels</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: { colors: {
+    lightbg:'#f0f2f5', lightcard:'#ffffff', lightborder:'#e4e6eb',
+    darkbg:'#0b1528', darkcard:'#1e293b', accentblue:'#2563eb', neoncyan:'#06b6d4'
+  }}}};
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; transition: background .3s, color .3s; }
+  body.light-mode { background:#f0f2f5; color:#1a1a2e; }
+  body.light-mode .bg-darkbg { background:#f0f2f5 !important; }
+  body.light-mode .bg-darkcard { background:#ffffff !important; }
+  body.light-mode .border-slate-800 { border-color:#e4e6eb !important; }
+  body.light-mode .border-slate-900 { border-color:#d0d2d6 !important; }
+  body.light-mode .text-slate-100 { color:#1a1a2e !important; }
+  body.light-mode .text-slate-200 { color:#2d2d44 !important; }
+  body.light-mode .text-slate-300 { color:#3d3d5c !important; }
+  body.light-mode .text-slate-400 { color:#6b6b8a !important; }
+  body.light-mode .text-slate-500 { color:#8a8aa8 !important; }
+  body.light-mode .text-slate-600 { color:#a0a0b8 !important; }
+  body.light-mode .bg-slate-800 { background:#e8e8ee !important; }
+  body.light-mode .bg-slate-900 { background:#f5f5f8 !important; }
+  body.light-mode .bg-slate-200 { background:#e8e8ee !important; }
+  body.light-mode .bg-slate-800\/50 { background:rgba(232,232,238,.5) !important; }
+  body.light-mode .bg-slate-800\/60 { background:rgba(232,232,238,.6) !important; }
+  body.light-mode .hover\:bg-slate-700:hover { background:#c8c8d0 !important; }
+  body.light-mode .hover\:bg-slate-800:hover { background:#dddde4 !important; }
+  body.light-mode .border-slate-300 { border-color:#d0d2d6 !important; }
+  body.dark-mode { background:#000; color:#f1f5f9; }
+  .hidden { display:none !important; }
+  .spinner { border:2px solid rgba(255,255,255,.15); width:16px; height:16px; border-radius:50%; border-left-color:#fff; animation:spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .success-toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#065f46,#047857); border:1px solid #34d399; color:#fff; padding:14px 20px; border-radius:18px; z-index:200; box-shadow:0 20px 60px rgba(0,0,0,.5); max-width:90%; text-align:center; animation:toastIn .4s ease-out; }
+  @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(20px) scale(.9);} to { opacity:1; transform:translateX(-50%) translateY(0) scale(1);} }
+
+  /* Reels container */
+  .reels-container {
+    height: calc(100vh - 64px);
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .reels-container::-webkit-scrollbar { display: none; }
+  .reel-item {
+    height: calc(100vh - 64px);
+    scroll-snap-align: start;
+    position: relative;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .reel-item video { width: 100%; height: 100%; object-fit: cover; }
+  .reel-overlay {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 20px;
+    background: linear-gradient(to top, rgba(0,0,0,.75) 0%, transparent 45%, rgba(0,0,0,.15) 100%);
+    pointer-events: none;
+  }
+  .reel-overlay * { pointer-events: auto; }
+  .reel-actions {
+    position: absolute; right: 14px; bottom: 100px;
+    display: flex; flex-direction: column; gap: 18px;
+    z-index: 10;
+  }
+  .reel-actions button {
+    display: flex; flex-direction: column; align-items: center;
+    color: white; gap: 4px; font-size: 11px;
+    text-shadow: 0 2px 10px rgba(0,0,0,.5);
+    background: transparent; border: none; cursor: pointer;
+  }
+  .reel-actions button svg { width: 28px; height: 28px; filter: drop-shadow(0 2px 8px rgba(0,0,0,.5)); }
+  .reel-actions button .count { font-weight: bold; font-size: 12px; }
+  .reel-user-info { cursor: pointer; transition: opacity .2s; }
+  .reel-user-info:hover { opacity: .75; }
+
+  /* Reel menu button */
+  .reel-menu-btn {
+    position: absolute; top: 16px; right: 16px; z-index: 20;
+    background: rgba(0,0,0,.5); border: none; border-radius: 50%;
+    padding: 8px; color: white; cursor: pointer; backdrop-filter: blur(4px);
+    transition: background .2s;
+  }
+  .reel-menu-btn:hover { background: rgba(0,0,0,.75); }
+  .post-menu-dropdown {
+    position: fixed; background: #1e293b; border-radius: 12px; border: 1px solid #334155;
+    padding: 6px; min-width: 150px; z-index: 50; box-shadow: 0 10px 40px rgba(0,0,0,.5);
+  }
+  .post-menu-dropdown button {
+    display: block; width: 100%; text-align: left; padding: 8px 14px;
+    border-radius: 8px; font-size: 12px; font-weight: 500;
+    background: transparent; border: none; color: #e2e8f0; cursor: pointer;
+  }
+  .post-menu-dropdown button:hover { background: #334155; }
+  .post-menu-dropdown .delete-btn { color: #ef4444; }
+  body.light-mode .post-menu-dropdown { background: #fff; border-color: #e4e6eb; }
+  body.light-mode .post-menu-dropdown button { color: #1a1a2e; }
+  body.light-mode .post-menu-dropdown button:hover { background: #f0f2f5; }
+  body.light-mode .post-menu-dropdown .delete-btn { color: #dc2626; }
+
+  /* Empty state */
+  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #64748b; padding: 32px; text-align: center; }
+
+  /* Modal */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.9); backdrop-filter: blur(6px); z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .modal-card { background: #1e293b; width: 100%; max-width: 380px; border-radius: 24px; border: 1px solid #334155; padding: 20px; max-height: 85vh; display: flex; flex-direction: column; }
+  body.light-mode .modal-card { background: #ffffff; border-color: #e4e6eb; }
+
+  /* Shared media preview in share modal */
+  .friend-row { background: #0b1528; border: 1px solid #334155; padding: 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
+  body.light-mode .friend-row { background: #f5f5f8; border-color: #e4e6eb; }
+</style>
+</head>
+<body class="dark-mode bg-darkbg min-h-screen">
+
+<div class="max-w-md mx-auto w-full relative" style="height:100vh;">
+
+  <!-- Header overlay -->
+  <div class="absolute top-0 left-0 right-0 z-30 px-4 py-3 flex items-center justify-between pointer-events-none">
+    <a href="main.html" class="pointer-events-auto p-2 rounded-full bg-black/40 backdrop-blur border border-white/10">
+      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    </a>
+    <h1 class="text-sm font-black uppercase tracking-widest text-white/90">Reels</h1>
+    <a href="create.html" class="pointer-events-auto p-2 rounded-full bg-black/40 backdrop-blur border border-white/10">
+      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+    </a>
+  </div>
+
+  <!-- Reels feed -->
+  <div id="reels-feed" class="reels-container">
+    <div class="empty-state">
+      <div class="spinner mb-4"></div>
+      <p class="text-xs">Loading reels...</p>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <nav class="absolute bottom-0 left-0 right-0 max-w-md mx-auto bg-black/70 backdrop-blur-md border-t border-white/10 h-16 flex justify-around items-center z-30">
+    <a href="main.html" class="text-white/60 hover:text-cyan-400 flex flex-col items-center flex-1 py-1">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+    </a>
+    <a href="chat.html" class="text-white/60 hover:text-cyan-400 flex flex-col items-center flex-1 py-1">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+    </a>
+    <a href="reels.html" class="text-pink-400 flex flex-col items-center flex-1 py-1">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+    </a>
+    <a href="search.html" class="text-white/60 hover:text-cyan-400 flex flex-col items-center flex-1 py-1">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+    </a>
+    <a href="profile.html" class="text-white/60 hover:text-cyan-400 flex flex-col items-center flex-1 py-1">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7 7z"/></svg>
+    </a>
+  </nav>
+</div>
+
+<!-- COMMENTS MODAL -->
+<div id="comments-modal" class="hidden modal-bg">
+  <div class="modal-card">
+    <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3">
+      <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Comments</span>
+      <button id="close-comments" class="text-slate-400 hover:text-white text-xs bg-slate-800 px-2.5 py-1 rounded-lg">Close</button>
+    </div>
+    <div id="comments-list" class="flex-1 overflow-y-auto space-y-2 mb-3 min-h-[120px] max-h-[50vh]"></div>
+    <div class="flex gap-2 pt-3 border-t border-slate-800">
+      <input type="text" id="comment-input" placeholder="Add a comment..."
+        class="flex-1 bg-darkbg border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none">
+      <button id="send-comment" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl text-xs font-bold text-white">Post</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div id="share-modal" class="hidden modal-bg">
+  <div class="modal-card">
+    <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3">
+      <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Share Reel</span>
+      <button id="close-share" class="text-slate-400 hover:text-white text-xs bg-slate-800 px-2.5 py-1 rounded-lg">Close</button>
+    </div>
+    <div id="share-grid" class="overflow-y-auto flex-1 space-y-2"></div>
+  </div>
+</div>
+
+<!-- EDIT REEL MODAL -->
+<div id="edit-modal" class="hidden modal-bg">
+  <div class="modal-card">
+    <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3">
+      <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Edit Reel Caption</span>
+      <button id="close-edit" class="text-slate-400 hover:text-white text-xs bg-slate-800 px-2.5 py-1 rounded-lg">Close</button>
+    </div>
+    <input type="text" id="edit-caption" placeholder="New caption..."
+      class="w-full bg-darkbg border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none">
+    <button id="save-edit" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl text-xs font-bold">Save Changes</button>
+  </div>
+</div>
+
+<div id="toast" class="success-toast hidden">
+  <p id="toast-title" class="font-bold text-sm"></p>
+  <p id="toast-message" class="text-xs text-emerald-200 mt-0.5"></p>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+  import { getDatabase, ref, get, set, push, update, remove, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC5ufTBjot8i-PJCBkJtUpc50jJcYmzMBQ",
+    authDomain: "stardust-hub.firebaseapp.com",
+    databaseURL: "https://stardust-hub-default-rtdb.firebaseio.com",
+    projectId: "stardust-hub",
+    storageBucket: "stardust-hub.firebasestorage.app",
+    messagingSenderId: "672339143681",
+    appId: "1:672339143681:web:42d7e7f3fd923890aba400"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+  const theme = localStorage.getItem('stardust_theme') || 'light';
+  document.body.classList.remove('light-mode','dark-mode');
+  document.body.classList.add(theme === 'light' ? 'light-mode' : 'dark-mode');
+
+  let ME = null;
+  let PEERS = [];
+  let FRIENDSHIPS = {};
+  let REELS = [];
+  let reelUnsub = null;
+  let viewedTrack = {};
+  let viewTimers = {};
+  let observer = null;
+  let activeReelId = null;
+
+  function toast(title, msg) {
+    const el = document.getElementById('toast');
+    document.getElementById('toast-title').textContent = title;
+    document.getElementById('toast-message').textContent = msg;
+    el.classList.remove('hidden');
+    clearTimeout(window._toastTO);
+    window._toastTO = setTimeout(() => el.classList.add('hidden'), 3500);
+  }
+
+  // ---- Auth + load ----
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.replace('auth.html'); return; }
+
+    const [usersSnap, friendsSnap] = await Promise.all([
+      get(ref(db, 'users')),
+      get(ref(db, 'friendships'))
+    ]);
+    const usersData = usersSnap.val() || {};
+    PEERS = Object.keys(usersData).map(k => usersData[k]).filter(u => u && u.uid);
+    for (const u of PEERS) {
+      if (u.realFirebaseUID === user.uid) { ME = u; break; }
+    }
+    if (!ME) { window.location.replace('auth.html'); return; }
+    FRIENDSHIPS = friendsSnap.val() || {};
+
+    // Scoped reels listener — this page ONLY
+    const unsub = onValue(ref(db, 'reels'), (snap) => {
+      const data = snap.val() || {};
+      REELS = Object.keys(data)
+        .map(k => data[k])
+        .filter(r => r && r.id)
+        .sort((a,b) => b.createdAt - a.createdAt);
+      render();
+    });
+    reelUnsub = unsub;
+  });
+
+  // ---- Render ----
+  function render() {
+    const feed = document.getElementById('reels-feed');
+    if (observer) { observer.disconnect(); observer = null; }
+    Object.keys(viewTimers).forEach(k => { clearTimeout(viewTimers[k]); delete viewTimers[k]; });
+    feed.innerHTML = '';
+
+    if (!REELS.length) {
+      feed.innerHTML = `
+        <div class="empty-state">
+          <svg class="w-16 h-16 mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          <p class="text-sm font-medium text-white/70">No Reels Yet</p>
+          <p class="text-xs mt-1 text-white/40">Tap the + button to upload one.</p>
+        </div>`;
+      return;
+    }
+
+    const myUID = ME.uid;
+    const fontClass = (ME.isPremium && ME.premiumFont) ? ME.premiumFont : '';
+
+    REELS.forEach(reel => {
+      const liked = reel.likes && reel.likes[myUID] === true;
+      const likeCount = reel.likes ? Object.keys(reel.likes).length : 0;
+      const commentCount = reel.comments ? Object.keys(reel.comments).length : 0;
+      const saved = Array.isArray(ME.savedReels) && ME.savedReels.includes(reel.id);
+      const views = reel.views || 0;
+      const isOwner = reel.userId === myUID;
+
+      const item = document.createElement('div');
+      item.className = 'reel-item';
+      item.dataset.reelId = reel.id;
+
+      item.innerHTML = `
+        ${isOwner ? `
+          <button class="reel-menu-btn" data-menu="${reel.id}">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+          </button>` : ''}
+
+        <video src="${reel.videoUrl}" playsinline preload="none" loop muted></video>
+
+        <div class="reel-overlay">
+          <div class="flex items-center gap-3 mb-2">
+            <img src="${reel.userAvatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}"
+              class="w-8 h-8 rounded-full border border-white/20 object-cover reel-user-info" data-peer="${reel.userId}" loading="lazy">
+            <span class="font-bold text-sm text-white reel-user-info ${fontClass}" data-peer="${reel.userId}">${reel.userName}</span>
+          </div>
+          ${reel.caption ? `<p class="text-sm text-white/85 ${fontClass}" style="max-width:70%;">${reel.caption}</p>` : ''}
+        </div>
+
+        <div class="reel-actions">
+          <button data-like="${reel.id}">
+            <svg fill="${liked ? '#ff2d55' : 'none'}" stroke="${liked ? '#ff2d55' : 'white'}" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+            <span class="count" data-like-count="${reel.id}">${likeCount}</span>
+          </button>
+          <button data-comment="${reel.id}">
+            <svg fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+            <span class="count">${commentCount}</span>
+          </button>
+          <button data-share="${reel.id}">
+            <svg fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+          </button>
+          <button data-save="${reel.id}">
+            <svg fill="${saved ? 'white' : 'none'}" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+          </button>
+          <div class="flex items-center gap-1 text-white/70 text-xs mt-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            <span data-views="${reel.id}">${views}</span>
+          </div>
+        </div>
+      `;
+
+      feed.appendChild(item);
+    });
+
+    // Wire events (event delegation would be cleaner, but explicit binding is fine)
+    feed.querySelectorAll('[data-peer]').forEach(el => {
+      el.addEventListener('click', () => {
+        const uid = el.dataset.peer;
+        if (uid === ME.uid) window.location.href = 'profile.html';
+        else window.location.href = 'profile.html?uid=' + encodeURIComponent(uid);
+      });
+    });
+    feed.querySelectorAll('[data-like]').forEach(btn => {
+      btn.addEventListener('click', () => toggleLike(btn.dataset.like));
+    });
+    feed.querySelectorAll('[data-comment]').forEach(btn => {
+      btn.addEventListener('click', () => openComments(btn.dataset.comment));
+    });
+    feed.querySelectorAll('[data-share]').forEach(btn => {
+      btn.addEventListener('click', () => openShare(btn.dataset.share));
+    });
+    feed.querySelectorAll('[data-save]').forEach(btn => {
+      btn.addEventListener('click', () => toggleSave(btn.dataset.save));
+    });
+    feed.querySelectorAll('[data-menu]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openReelMenu(btn.dataset.menu, btn);
+      });
+    });
+
+    // Set up IntersectionObserver for lazy play + view tracking
+    setupObserver();
+  }
+
+  // ---- Lazy video observer ----
+  function setupObserver() {
+    const items = document.querySelectorAll('.reel-item');
+    observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const video = entry.target.querySelector('video');
+        const reelId = entry.target.dataset.reelId;
+        if (!video || !reelId) return;
+
+        if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
+          // Lazy-load then play
+          if (!video.dataset.loaded) {
+            video.load();
+            video.dataset.loaded = '1';
+          }
+          video.play().catch(() => {});
+
+          // View tracking after 3s visible
+          if (!viewedTrack[reelId] && !viewTimers[reelId]) {
+            viewTimers[reelId] = setTimeout(() => {
+              trackView(reelId);
+              delete viewTimers[reelId];
+            }, 3000);
+          }
+        } else {
+          video.pause();
+          if (viewTimers[reelId]) {
+            clearTimeout(viewTimers[reelId]);
+            delete viewTimers[reelId];
+          }
+        }
+      });
+    }, { threshold: [0, 0.6, 1] });
+
+    items.forEach(i => observer.observe(i));
+  }
+
+  async function trackView(reelId) {
+    if (viewedTrack[reelId]) return;
+    const myUID = ME.uid;
+    const snap = await get(ref(db, 'reels'));
+    const data = snap.val() || {};
+    let dbKey = null;
+    for (const k of Object.keys(data)) {
+      if (data[k] && data[k].id === reelId) { dbKey = k; break; }
+    }
+    if (!dbKey) return;
+
+    const reelRef = ref(db, `reels/${dbKey}`);
+    try {
+      const res = await runTransaction(reelRef, (current) => {
+        if (current === null) return current;
+        if (!current.viewedUsers) current.viewedUsers = {};
+        if (current.viewedUsers[myUID]) return current;
+        current.viewedUsers[myUID] = true;
+        current.views = (current.views || 0) + 1;
+        return current;
+      });
+      if (res.committed) {
+        viewedTrack[reelId] = true;
+        const el = document.querySelector(`[data-views="${reelId}"]`);
+        if (el) el.textContent = parseInt(el.textContent || '0') + 1;
+      }
+    } catch (e) { /* ignore */ }
+  }
+
+  // ---- Like ----
+  async function toggleLike(reelId) {
+    const snap = await get(ref(db, 'reels'));
+    const data = snap.val() || {};
+    let dbKey = null;
+    for (const k of Object.keys(data)) {
+      if (data[k] && data[k].id === reelId) { dbKey = k; break; }
+    }
+    if (!dbKey) return;
+    const myUID = ME.uid;
+    const wasLiked = data[dbKey].likes && data[dbKey].likes[myUID];
+    const likeRef = ref(db, `reels/${dbKey}/likes/${myUID}`);
+
+    if (wasLiked) {
+      await remove(likeRef);
+    } else {
+      await set(likeRef, true);
+      const reelOwner = data[dbKey].userId;
+      if (reelOwner && reelOwner !== myUID) {
+        pushNotif(reelOwner, {
+          type: 'reel_like',
+          message: `${ME.name} liked your reel`,
+          sourceUserId: myUID,
+          reelId: reelId
+        });
+      }
+    }
+  }
+
+  // ---- Save ----
+  async function toggleSave(reelId) {
+    const arr = Array.isArray(ME.savedReels) ? [...ME.savedReels] : [];
+    const idx = arr.indexOf(reelId);
+    if (idx >= 0) { arr.splice(idx, 1); toast('Removed', 'Reel removed from saved'); }
+    else { arr.push(reelId); toast('Saved', 'Reel saved'); }
+    await update(ref(db, `users/${ME.uid}`), { savedReels: arr });
+    ME.savedReels = arr;
+  }
+
+  // ---- Comments ----
+  async function openComments(reelId) {
+    activeReelId = reelId;
+    document.getElementById('comments-modal').classList.remove('hidden');
+    await renderComments();
+  }
+
+  async function renderComments() {
+    const c = document.getElementById('comments-list');
+    c.innerHTML = '';
+    const snap = await get(ref(db, 'reels'));
+    const data = snap.val() || {};
+    let dbKey = null;
+    for (const k of Object.keys(data)) {
+      if (data[k] && data[k].id === activeReelId) { dbKey = k; break; }
+    }
+    if (!dbKey) return;
+    const comments = data[dbKey].comments || {};
+    const keys = Object.keys(comments);
+    if (!keys.length) {
+      c.innerHTML = `<p class="text-[10px] text-slate-500 italic text-center py-4">No comments yet</p>`;
+      return;
+    }
+    keys.sort((a,b) => (comments[a].timestamp||0) - (comments[b].timestamp||0));
+    keys.forEach(k => {
+      const cm = comments[k];
+      const isMine = cm.authorUID === ME.uid;
+      const row = document.createElement('div');
+      row.className = 'bg-slate-900 border border-slate-800 p-2.5 rounded-xl text-xs flex justify-between items-start gap-2';
+      row.innerHTML = `
+        <div>
+          <p class="font-bold text-slate-400">@${cm.authorName}</p>
+          <p class="text-slate-300">${cm.text}</p>
+        </div>
+        ${isMine ? `<button class="text-red-400 p-1" data-del>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </button>` : ''}
+      `;
+      if (isMine) {
+        row.querySelector('[data-del]').addEventListener('click', async () => {
+          if (!confirm('Delete comment?')) return;
+          await remove(ref(db, `reels/${dbKey}/comments/${k}`));
+          await renderComments();
+        });
+      }
+      c.appendChild(row);
+    });
+  }
+
+  document.getElementById('send-comment').addEventListener('click', async () => {
+    const input = document.getElementById('comment-input');
+    const txt = input.value.trim();
+    if (!txt || !activeReelId) return;
+
+    const snap = await get(ref(db, 'reels'));
+    const data = snap.val() || {};
+    let dbKey = null, ownerUID = null;
+    for (const k of Object.keys(data)) {
+      if (data[k] && data[k].id === activeReelId) { dbKey = k; ownerUID = data[k].userId; break; }
+    }
+    if (!dbKey) return;
+
+    await push(ref(db, `reels/${dbKey}/comments`), {
+      authorUID: ME.uid,
+      authorName: ME.name,
+      text: txt,
+      timestamp: Date.now()
+    });
+    input.value = '';
+    if (ownerUID && ownerUID !== ME.uid) {
+      pushNotif(ownerUID, {
+        type: 'reel_comment',
+        message: `${ME.name} commented on your reel: "${txt}"`,
+        sourceUserId: ME.uid,
+        reelId: activeReelId
+      });
+    }
+    await renderComments();
+  });
+
+  document.getElementById('close-comments').addEventListener('click', () => {
+    document.getElementById('comments-modal').classList.add('hidden');
+    activeReelId = null;
+  });
+
+  // ---- Share ----
+  let shareReelId = null;
+  function openShare(reelId) {
+    shareReelId = reelId;
+    const grid = document.getElementById('share-grid');
+    grid.innerHTML = '';
+    let count = 0;
+    PEERS.forEach(peer => {
+      if (peer.uid === ME.uid) return;
+      if (FRIENDSHIPS[`bond_${ME.uid}_and_${peer.uid}`] !== 'confirmed') return;
+      count++;
+      const row = document.createElement('div');
+      row.className = 'friend-row';
+      row.innerHTML = `
+        <div class="flex items-center gap-2">
+          <img src="${peer.pfp || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-7 h-7 rounded-full object-cover">
+          <span class="text-xs font-bold text-slate-300">${peer.name}</span>
+        </div>
+        <button class="bg-cyan-600 hover:bg-cyan-700 px-3 py-1 rounded-lg text-[11px] font-bold text-white">Send</button>
+      `;
+      row.querySelector('button').addEventListener('click', () => shareTo(peer.uid));
+      grid.appendChild(row);
+    });
+    if (!count) grid.innerHTML = `<p class="text-[10px] text-slate-500 italic text-center py-3">No friends to share with.</p>`;
+    document.getElementById('share-modal').classList.remove('hidden');
+  }
+
+  async function shareTo(targetUID) {
+    const reel = REELS.find(r => r.id === shareReelId);
+    if (!reel) return;
+    const myUID = ME.uid;
+    const threadKey = myUID < targetUID ? `${myUID}_text_${targetUID}` : `${targetUID}_text_${myUID}`;
+    await push(ref(db, `chats/${threadKey}`), {
+      sender: myUID,
+      text: `Shared a reel: ${reel.caption || 'Check this out!'}`,
+      timestamp: Date.now(),
+      status: 'transmitted',
+      mediaType: 'reel',
+      mediaUrl: reel.videoUrl,
+      reelId: reel.id
+    });
+    document.getElementById('share-modal').classList.add('hidden');
+    toast('Shared', 'Reel sent');
+  }
+
+  document.getElementById('close-share').addEventListener('click', () => {
+    document.getElementById('share-modal').classList.add('hidden');
+  });
+
+  // ---- Owner menu ----
+  let editingReelId = null;
+  function openReelMenu(reelId, anchor) {
+    document.querySelectorAll('.post-menu-dropdown').forEach(el => el.remove());
+    const rect = anchor.getBoundingClientRect();
+    const menu = document.createElement('div');
+    menu.className = 'post-menu-dropdown';
+    menu.style.top = (rect.bottom + 6) + 'px';
+    menu.style.right = Math.max(8, window.innerWidth - rect.right) + 'px';
+    menu.innerHTML = `
+      <button data-action="edit">Edit Caption</button>
+      <button data-action="delete" class="delete-btn">Delete Reel</button>
+    `;
+    document.body.appendChild(menu);
+
+    const close = (e) => {
+      if (!e.target.closest('.post-menu-dropdown') && !e.target.closest('[data-menu]')) {
+        menu.remove();
+        document.removeEventListener('click', close);
+      }
+    };
+    setTimeout(() => document.addEventListener('click', close), 10);
+
+    menu.querySelector('[data-action="edit"]').addEventListener('click', () => {
+      menu.remove();
+      editingReelId = reelId;
+      const reel = REELS.find(r => r.id === reelId);
+      document.getElementById('edit-caption').value = reel ? (reel.caption || '') : '';
+      document.getElementById('edit-modal').classList.remove('hidden');
+    });
+
+    menu.querySelector('[data-action="delete"]').addEventListener('click', async () => {
+      menu.remove();
+      if (!confirm('Delete this reel?')) return;
+      const snap = await get(ref(db, 'reels'));
+      const data = snap.val() || {};
+      for (const k of Object.keys(data)) {
+        if (data[k] && data[k].id === reelId) {
+          await remove(ref(db, 'reels/' + k));
+          toast('Deleted', 'Reel removed');
+          return;
+        }
+      }
+    });
+  }
+
+  document.getElementById('close-edit').addEventListener('click', () => {
+    document.getElementById('edit-modal').classList.add('hidden');
+    editingReelId = null;
+  });
+
+  document.getElementById('save-edit').addEventListener('click', async () => {
+    if (!editingReelId) return;
+    const caption = document.getElementById('edit-caption').value.trim();
+    const snap = await get(ref(db, 'reels'));
+    const data = snap.val() || {};
+    for (const k of Object.keys(data)) {
+      if (data[k] && data[k].id === editingReelId) {
+        await update(ref(db, `reels/${k}`), { caption });
+        document.getElementById('edit-modal').classList.add('hidden');
+        toast('Updated', 'Caption updated');
+        editingReelId = null;
+        return;
+      }
+    }
+  });
+
+  // ---- Notif helper ----
+  async function pushNotif(targetUID, notif) {
+    try {
+      const obj = {
+        id: 'n_' + Date.now() + '_' + Math.floor(Math.random()*1000),
+        ...notif,
+        targetUserId: targetUID,
+        timestamp: Date.now(),
+        read: false
+      };
+      const snap = await get(ref(db, `users/${targetUID}/notifications`));
+      const arr = Array.isArray(snap.val()) ? snap.val() : [];
+      arr.unshift(obj);
+      const cutoff = Date.now() - 7*24*60*60*1000;
+      await set(ref(db, `users/${targetUID}/notifications`), arr.filter(n => n.timestamp > cutoff).slice(0,50));
+    } catch (e) { /* silent */ }
+  }
+
+  window.addEventListener('beforeunload', () => {
+    if (reelUnsub) reelUnsub();
+    if (observer) observer.disconnect();
+  });
+</script>
+</body>
+</html>
