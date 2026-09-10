@@ -31,10 +31,12 @@
   body.light-mode .bg-slate-800\/50 { background:rgba(232,232,238,.5) !important; }
   body.light-mode .bg-slate-900\/50 { background:rgba(245,245,248,.5) !important; }
   body.light-mode .bg-slate-800\/60 { background:rgba(232,232,238,.6) !important; }
+  body.light-mode .bg-slate-800\/70 { background:rgba(232,232,238,.7) !important; }
   body.light-mode .hover\:bg-slate-300:hover { background:#d8d8de !important; }
   body.light-mode .hover\:bg-slate-700:hover { background:#c8c8d0 !important; }
   body.light-mode .hover\:bg-slate-800:hover { background:#dddde4 !important; }
   body.light-mode .border-slate-300 { border-color:#d0d2d6 !important; }
+  body.light-mode .border-slate-700 { border-color:#d0d2d6 !important; }
   body.dark-mode { background:#0b1528; color:#f1f5f9; }
   .hidden { display:none !important; }
   .spinner { border:2px solid rgba(255,255,255,.15); width:16px; height:16px; border-radius:50%; border-left-color:#fff; animation:spin .8s linear infinite; }
@@ -136,6 +138,18 @@
       </div>
 
       <div id="profile-card" class="bg-darkcard p-5 rounded-2xl border border-slate-800 relative transition-all duration-300">
+        <!-- Owner-only Settings icon (top-right) -->
+        <a id="settings-icon-btn" href="settings.html"
+           class="hidden absolute top-4 right-4 p-2 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-cyan-500/30 hover:border-cyan-500/60 transition shadow-lg shadow-cyan-500/10"
+           title="Settings" aria-label="Open Settings">
+          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </a>
+
         <div class="flex flex-col items-center text-center">
           <div id="avatar-frame" class="w-20 h-20 rounded-full p-0.5 border border-slate-700 mb-3 overflow-hidden">
             <img id="avatar" src="" class="w-full h-full object-cover rounded-full" alt="Avatar">
@@ -146,12 +160,7 @@
           <p id="bio" class="text-xs text-slate-400 mt-3 max-w-xs leading-relaxed"></p>
         </div>
 
-        <!-- Owner actions -->
-        <div id="owner-actions" class="hidden w-full mt-4 pt-4 border-t border-slate-800">
-          <button id="settings-btn" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 py-2 rounded-xl text-xs font-bold transition">Open Settings</button>
-        </div>
-
-        <!-- Peer actions -->
+        <!-- Peer actions (only shows on other users' profiles) -->
         <div id="peer-actions" class="hidden w-full mt-4 pt-4 border-t border-slate-800 space-y-2">
           <button id="friend-action-btn" class="w-full py-2 rounded-xl text-xs font-bold transition"></button>
           <button id="chat-action-btn" class="hidden w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl text-xs font-bold transition">Open Chat</button>
@@ -206,7 +215,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-  import { getDatabase, ref, get, set, update, onValue, remove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+  import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyC5ufTBjot8i-PJCBkJtUpc50jJcYmzMBQ",
@@ -226,7 +235,7 @@
   document.body.classList.add(theme + '-mode');
 
   let ME = null;
-  let TARGET = null;    // profile being viewed (may === ME)
+  let TARGET = null;
   let IS_OWNER = false;
   let ALL_POSTS = [];
   let ALL_REELS = [];
@@ -250,7 +259,7 @@
     document.getElementById('img-viewer').classList.add('hidden');
   });
 
-  // ---- Tabs ----
+  // Tabs
   document.querySelectorAll('[data-tab]').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('active'));
@@ -261,11 +270,10 @@
     });
   });
 
-  // ---- Auth gate ----
+  // Auth gate
   onAuthStateChanged(auth, async (user) => {
     if (!user) { window.location.replace('auth.html'); return; }
 
-    // Single read of users table to find ME + TARGET (existing schema requires this)
     const usersSnap = await get(ref(db, 'users'));
     const users = usersSnap.val() || {};
     for (const k of Object.keys(users)) {
@@ -280,7 +288,6 @@
     if (IS_OWNER) {
       TARGET = ME;
     } else {
-      // Find target by uid
       for (const k of Object.keys(users)) {
         if (users[k] && users[k].uid === targetUid) { TARGET = users[k]; break; }
       }
@@ -295,7 +302,7 @@
     renderProfile();
     applyPremiumToCard(TARGET);
 
-    // Load posts + reels for this profile only
+    // Posts for this profile
     const unsubPostsFn = onValue(ref(db, 'publications'), (snap) => {
       const data = snap.val() || {};
       ALL_POSTS = Object.keys(data)
@@ -308,6 +315,7 @@
     });
     unsubPosts = unsubPostsFn;
 
+    // Reels for this profile
     const unsubReelsFn = onValue(ref(db, 'reels'), (snap) => {
       const data = snap.val() || {};
       ALL_REELS = Object.keys(data)
@@ -341,19 +349,20 @@
     } else prof.classList.add('hidden');
 
     if (IS_OWNER) {
-      document.getElementById('owner-actions').classList.remove('hidden');
+      // Show the settings gear icon in the top-right of the profile card
+      document.getElementById('settings-icon-btn').classList.remove('hidden');
       document.getElementById('peer-actions').classList.add('hidden');
-      document.getElementById('settings-btn').addEventListener('click', () => {
-        window.location.href = 'settings.html';
-      });
+
       if (!ME.isPremium) {
-        document.getElementById('premium-banner').classList.remove('hidden');
-        document.getElementById('premium-banner').addEventListener('click', () => {
+        const banner = document.getElementById('premium-banner');
+        banner.classList.remove('hidden');
+        // avoid attaching the same listener multiple times
+        banner.onclick = () => {
           window.location.href = 'settings.html#premium';
-        });
+        };
       }
     } else {
-      document.getElementById('owner-actions').classList.add('hidden');
+      document.getElementById('settings-icon-btn').classList.add('hidden');
       document.getElementById('peer-actions').classList.remove('hidden');
     }
   }
