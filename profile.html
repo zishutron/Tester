@@ -52,6 +52,29 @@
   body.light-mode .skeleton { background:linear-gradient(90deg,#e8e8ee 25%,#f0f0f5 50%,#e8e8ee 75%); background-size:200% 100%; }
   @keyframes shimmer { 0% { background-position:-200% 0; } 100% { background-position:200% 0; } }
 
+  /* 3-dot menu */
+  .post-menu-btn { position:absolute; top:8px; right:8px; padding:5px; border-radius:8px; background:rgba(100,116,139,0.15); border:none; cursor:pointer; color:#94a3b8; transition: background .2s, color .2s; display:flex; align-items:center; justify-content:center; }
+  .post-menu-btn:hover { background:rgba(100,116,139,0.3); color:#e2e8f0; }
+  body.light-mode .post-menu-btn { color:#6b6b8a; }
+  body.light-mode .post-menu-btn:hover { background:rgba(107,107,138,0.15); color:#1a1a2e; }
+  .post-menu-dropdown { position:fixed; background:#1e293b; border-radius:12px; border:1px solid #334155; padding:6px; min-width:150px; z-index:60; box-shadow:0 10px 40px rgba(0,0,0,.6); }
+  .post-menu-dropdown button { display:flex; align-items:center; gap:8px; width:100%; text-align:left; padding:9px 12px; border-radius:8px; font-size:12px; font-weight:500; background:transparent; border:none; color:#e2e8f0; cursor:pointer; transition: background .2s; }
+  .post-menu-dropdown button:hover { background:#334155; }
+  .post-menu-dropdown button.delete-btn { color:#ef4444; }
+  .post-menu-dropdown button.delete-btn:hover { background:rgba(239,68,68,0.15); }
+  body.light-mode .post-menu-dropdown { background:#ffffff; border-color:#e4e6eb; }
+  body.light-mode .post-menu-dropdown button { color:#1a1a2e; }
+  body.light-mode .post-menu-dropdown button:hover { background:#f0f2f5; }
+  body.light-mode .post-menu-dropdown button.delete-btn { color:#dc2626; }
+  body.light-mode .post-menu-dropdown button.delete-btn:hover { background:#fee2e2; }
+
+  /* Edit modal */
+  .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,.85); backdrop-filter: blur(6px); z-index:80; display:flex; align-items:center; justify-content:center; padding:16px; }
+  .modal-card { background:#1e293b; width:100%; max-width:400px; border-radius:22px; border:1px solid #334155; padding:20px; }
+  body.light-mode .modal-card { background:#ffffff; border-color:#e4e6eb; }
+  .modal-card textarea, .modal-card input[type=text] { width:100%; background:#0b1528; border:1px solid #334155; border-radius:12px; padding:10px; color:#e2e8f0; font-size:12px; resize:none; }
+  body.light-mode .modal-card textarea, body.light-mode .modal-card input[type=text] { background:#f0f2f5; border-color:#e4e6eb; color:#1a1a2e; }
+
   /* Premium themes */
   .premium-theme-galaxy { background: linear-gradient(135deg,#0b0a1a,#1a0a3e,#2a0a5e) !important; border-color:#7c3aed !important; color:#e0d7ff !important; box-shadow:0 0 30px rgba(124,58,237,.3) !important; }
   .premium-theme-sunset { background: linear-gradient(135deg,#1a0a0a,#4a1a0a,#7a2a0a) !important; border-color:#f97316 !important; color:#ffedd5 !important; box-shadow:0 0 30px rgba(249,115,22,.3) !important; }
@@ -123,14 +146,12 @@
   </header>
 
   <main class="px-4 py-4 space-y-4">
-    <!-- Loading skeleton -->
     <div id="loading" class="space-y-4">
       <div class="skeleton h-44"></div>
       <div class="skeleton h-12"></div>
       <div class="skeleton h-24"></div>
     </div>
 
-    <!-- Content -->
     <div id="content" class="hidden space-y-4">
       <div id="premium-banner" class="hidden bg-gradient-to-r from-blue-700 to-indigo-800 rounded-2xl p-4 cursor-pointer border border-blue-600 shadow-xl">
         <h4 class="text-sm font-bold text-slate-100">Deploy Premium Matrix Framework</h4>
@@ -138,7 +159,6 @@
       </div>
 
       <div id="profile-card" class="bg-darkcard p-5 rounded-2xl border border-slate-800 relative transition-all duration-300">
-        <!-- Owner-only Settings icon (top-right) -->
         <a id="settings-icon-btn" href="settings.html"
            class="hidden absolute top-4 right-4 p-2 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-cyan-500/30 hover:border-cyan-500/60 transition shadow-lg shadow-cyan-500/10"
            title="Settings" aria-label="Open Settings">
@@ -160,14 +180,12 @@
           <p id="bio" class="text-xs text-slate-400 mt-3 max-w-xs leading-relaxed"></p>
         </div>
 
-        <!-- Peer actions (only shows on other users' profiles) -->
         <div id="peer-actions" class="hidden w-full mt-4 pt-4 border-t border-slate-800 space-y-2">
           <button id="friend-action-btn" class="w-full py-2 rounded-xl text-xs font-bold transition"></button>
           <button id="chat-action-btn" class="hidden w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl text-xs font-bold transition">Open Chat</button>
         </div>
       </div>
 
-      <!-- Tabs -->
       <div id="tabs" class="flex bg-darkcard p-1 rounded-xl border border-slate-800/60 text-xs">
         <button data-tab="posts" class="tab-btn active flex-1 py-2 rounded-lg font-bold">Posts</button>
         <button data-tab="reels" class="tab-btn flex-1 py-2 rounded-lg font-bold">Reels</button>
@@ -207,6 +225,24 @@
   <img id="viewer-img" src="" class="max-w-full max-h-[80vh] object-contain rounded-xl">
 </div>
 
+<!-- EDIT POST MODAL -->
+<div id="edit-post-modal" class="hidden modal-bg">
+  <div class="modal-card">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-sm font-bold text-slate-100">Edit Post</h3>
+      <button id="close-edit-modal" class="text-slate-500 hover:text-white text-xl leading-none">×</button>
+    </div>
+    <textarea id="edit-post-text" rows="4" placeholder="Post text..."></textarea>
+    <label class="block text-[10px] uppercase font-bold text-slate-500 mt-3 mb-1">Change Image (optional)</label>
+    <input type="file" id="edit-post-image" accept="image/*" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-slate-800 file:text-slate-200">
+    <div id="edit-preview-wrap" class="hidden mt-2">
+      <img id="edit-preview" class="max-h-32 rounded-lg">
+      <button id="edit-remove-image" class="text-[10px] text-red-400 underline mt-1">Remove image</button>
+    </div>
+    <button id="save-edit-btn" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl text-xs font-bold">Save Changes</button>
+  </div>
+</div>
+
 <div id="toast" class="success-toast hidden">
   <p id="toast-title" class="font-bold text-sm"></p>
   <p id="toast-message" class="text-xs text-emerald-200 mt-0.5"></p>
@@ -215,7 +251,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-  import { getDatabase, ref, get, set, update, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+  import { getDatabase, ref, get, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyC5ufTBjot8i-PJCBkJtUpc50jJcYmzMBQ",
@@ -242,6 +278,11 @@
   let FRIENDSHIPS = {};
   let unsubPosts = null, unsubReels = null, unsubFriends = null;
 
+  // Edit state
+  let editingPostId = null;
+  let editingImageBase64 = null;
+  let editingImageChanged = false;
+
   function toast(title, msg) {
     const el = document.getElementById('toast');
     document.getElementById('toast-title').textContent = title;
@@ -259,7 +300,6 @@
     document.getElementById('img-viewer').classList.add('hidden');
   });
 
-  // Tabs
   document.querySelectorAll('[data-tab]').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('active'));
@@ -270,7 +310,6 @@
     });
   });
 
-  // Auth gate
   onAuthStateChanged(auth, async (user) => {
     if (!user) { window.location.replace('auth.html'); return; }
 
@@ -302,11 +341,10 @@
     renderProfile();
     applyPremiumToCard(TARGET);
 
-    // Posts for this profile
     const unsubPostsFn = onValue(ref(db, 'publications'), (snap) => {
       const data = snap.val() || {};
       ALL_POSTS = Object.keys(data)
-        .map(k => data[k])
+        .map(k => ({ dbKey: k, ...data[k] }))
         .filter(p => p && p.authorUID === TARGET.uid)
         .sort((a,b) => b.timestamp - a.timestamp);
       renderPosts();
@@ -315,7 +353,6 @@
     });
     unsubPosts = unsubPostsFn;
 
-    // Reels for this profile
     const unsubReelsFn = onValue(ref(db, 'reels'), (snap) => {
       const data = snap.val() || {};
       ALL_REELS = Object.keys(data)
@@ -326,7 +363,6 @@
     });
     unsubReels = unsubReelsFn;
 
-    // Friendship state (only for peers)
     if (!IS_OWNER) {
       const unsubFriendsFn = onValue(ref(db, 'friendships'), (snap) => {
         FRIENDSHIPS = snap.val() || {};
@@ -349,17 +385,12 @@
     } else prof.classList.add('hidden');
 
     if (IS_OWNER) {
-      // Show the settings gear icon in the top-right of the profile card
       document.getElementById('settings-icon-btn').classList.remove('hidden');
       document.getElementById('peer-actions').classList.add('hidden');
-
       if (!ME.isPremium) {
         const banner = document.getElementById('premium-banner');
         banner.classList.remove('hidden');
-        // avoid attaching the same listener multiple times
-        banner.onclick = () => {
-          window.location.href = 'settings.html#premium';
-        };
+        banner.onclick = () => window.location.href = 'settings.html#premium';
       }
     } else {
       document.getElementById('settings-icon-btn').classList.add('hidden');
@@ -373,7 +404,6 @@
     const name = document.getElementById('name');
     const bio = document.getElementById('bio');
 
-    // Reset
     [card, frame, name, bio].forEach(el => {
       if (!el) return;
       el.className = el.className.split(' ')
@@ -442,6 +472,9 @@
     }
   }
 
+  // ============================================================
+  // POSTS RENDER WITH 3-DOT MENU (owner only)
+  // ============================================================
   function renderPosts() {
     const c = document.getElementById('view-posts');
     c.innerHTML = '';
@@ -450,23 +483,152 @@
       return;
     }
     const fontClass = TARGET.isPremium && TARGET.premiumFont ? TARGET.premiumFont : '';
+
     ALL_POSTS.forEach(post => {
       const el = document.createElement('div');
-      el.className = 'bg-darkcard border border-slate-800 p-3 rounded-xl space-y-2 text-xs';
+      el.className = 'bg-darkcard border border-slate-800 p-3 rounded-xl space-y-2 text-xs relative';
       el.innerHTML = `
-        ${post.text ? `<p class="text-slate-300 ${fontClass}">${post.text}</p>` : ''}
+        ${IS_OWNER ? `
+          <button class="post-menu-btn" data-menu-btn="${post.dbKey}" title="Options">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+          </button>` : ''}
+        ${post.text ? `<p class="text-slate-300 ${fontClass} pr-8">${post.text}</p>` : ''}
         ${post.image ? `<div class="rounded-lg overflow-hidden max-h-48 cursor-pointer" data-img><img src="${post.image}" class="w-full h-full object-cover" loading="lazy"></div>` : ''}
         <p class="text-[9px] text-slate-600 font-mono">${new Date(post.timestamp).toLocaleString()}</p>
       `;
+
       if (post.image) {
         el.querySelector('[data-img]').addEventListener('click', () => {
           document.getElementById('viewer-img').src = post.image;
           document.getElementById('img-viewer').classList.remove('hidden');
         });
       }
+
+      if (IS_OWNER) {
+        const menuBtn = el.querySelector('[data-menu-btn]');
+        menuBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openPostMenu(post, menuBtn);
+        });
+      }
+
       c.appendChild(el);
     });
   }
+
+  function openPostMenu(post, anchor) {
+    document.querySelectorAll('.post-menu-dropdown').forEach(el => el.remove());
+    const rect = anchor.getBoundingClientRect();
+    const menu = document.createElement('div');
+    menu.className = 'post-menu-dropdown';
+    menu.style.top = (rect.bottom + 6) + 'px';
+    menu.style.right = Math.max(8, window.innerWidth - rect.right) + 'px';
+
+    menu.innerHTML = `
+      <button data-action="edit">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+        Edit Post
+      </button>
+      <button data-action="delete" class="delete-btn">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        Delete Post
+      </button>
+    `;
+    document.body.appendChild(menu);
+
+    const close = (e) => {
+      if (!e.target.closest('.post-menu-dropdown') && !e.target.closest('[data-menu-btn]')) {
+        menu.remove();
+        document.removeEventListener('click', close);
+      }
+    };
+    setTimeout(() => document.addEventListener('click', close), 10);
+
+    menu.querySelector('[data-action="edit"]').addEventListener('click', () => {
+      menu.remove();
+      openEditPost(post);
+    });
+
+    menu.querySelector('[data-action="delete"]').addEventListener('click', async () => {
+      menu.remove();
+      if (!confirm('Delete this post? This cannot be undone.')) return;
+      try {
+        await remove(ref(db, 'publications/' + post.dbKey));
+        toast('Deleted', 'Post deleted successfully');
+      } catch (err) {
+        toast('Error', 'Failed to delete: ' + err.message);
+      }
+    });
+  }
+
+  // ---- Edit post modal ----
+  function openEditPost(post) {
+    editingPostId = post.dbKey;
+    editingImageBase64 = post.image || null;
+    editingImageChanged = false;
+    document.getElementById('edit-post-text').value = post.text || '';
+    document.getElementById('edit-post-image').value = '';
+
+    const previewWrap = document.getElementById('edit-preview-wrap');
+    const previewImg = document.getElementById('edit-preview');
+    if (post.image) {
+      previewImg.src = post.image;
+      previewWrap.classList.remove('hidden');
+    } else {
+      previewWrap.classList.add('hidden');
+    }
+
+    document.getElementById('edit-post-modal').classList.remove('hidden');
+  }
+
+  document.getElementById('close-edit-modal').addEventListener('click', () => {
+    document.getElementById('edit-post-modal').classList.add('hidden');
+    editingPostId = null;
+    editingImageBase64 = null;
+    editingImageChanged = false;
+  });
+
+  document.getElementById('edit-post-image').addEventListener('change', (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      editingImageBase64 = ev.target.result;
+      editingImageChanged = true;
+      document.getElementById('edit-preview').src = ev.target.result;
+      document.getElementById('edit-preview-wrap').classList.remove('hidden');
+    };
+    reader.readAsDataURL(f);
+  });
+
+  document.getElementById('edit-remove-image').addEventListener('click', () => {
+    editingImageBase64 = null;
+    editingImageChanged = true;
+    document.getElementById('edit-post-image').value = '';
+    document.getElementById('edit-preview-wrap').classList.add('hidden');
+  });
+
+  document.getElementById('save-edit-btn').addEventListener('click', async () => {
+    if (!editingPostId) return;
+    const newText = document.getElementById('edit-post-text').value.trim();
+    if (!newText && !editingImageBase64) {
+      toast('Error', 'Post needs text or an image');
+      return;
+    }
+    const updates = { text: newText };
+    if (editingImageChanged) updates.image = editingImageBase64;
+
+    try {
+      await update(ref(db, 'publications/' + editingPostId), updates);
+      document.getElementById('edit-post-modal').classList.add('hidden');
+      toast('Updated', 'Post updated successfully');
+      editingPostId = null;
+      editingImageBase64 = null;
+      editingImageChanged = false;
+    } catch (err) {
+      toast('Error', 'Update failed: ' + err.message);
+    }
+  });
 
   function renderReels() {
     const c = document.getElementById('view-reels');
