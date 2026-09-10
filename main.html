@@ -35,13 +35,13 @@
   body.light-mode .hover\:bg-slate-700:hover { background:#c8c8d0 !important; }
   body.light-mode .hover\:bg-slate-800:hover { background:#dddde4 !important; }
   body.light-mode .border-slate-300 { border-color:#d0d2d6 !important; }
-  body.light-mode .bg-darkbg\/95 { background:rgba(240,242,245,.95) !important; }
+  body.light-mode .border-slate-700 { border-color:#d0d2d6 !important; }
   body.dark-mode { background:#0b1528; color:#f1f5f9; }
   .custom-scrollbar::-webkit-scrollbar { width:4px; }
   .custom-scrollbar::-webkit-scrollbar-thumb { background:#334155; border-radius:10px; }
   body.light-mode .custom-scrollbar::-webkit-scrollbar-thumb { background:#c0c0cc; }
   .hidden { display:none !important; }
-  .spinner { border:2px solid rgba(255,255,255,.1); width:16px; height:16px; border-radius:50%; border-left-color:#fff; animation:spin .8s linear infinite; }
+  .spinner { border:2px solid rgba(255,255,255,.15); width:16px; height:16px; border-radius:50%; border-left-color:#fff; animation:spin .8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .skeleton { background:linear-gradient(90deg,#1e293b 25%,#2a3a4a 50%,#1e293b 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; border-radius:12px; }
   body.light-mode .skeleton { background:linear-gradient(90deg,#e8e8ee 25%,#f0f0f5 50%,#e8e8ee 75%); background-size:200% 100%; }
@@ -49,15 +49,25 @@
   .success-toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#065f46,#047857); border:1px solid #34d399; color:#fff; padding:14px 20px; border-radius:18px; z-index:200; box-shadow:0 20px 60px rgba(0,0,0,.5); max-width:90%; text-align:center; animation:toastIn .4s ease-out; }
   @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(20px) scale(.9);} to { opacity:1; transform:translateX(-50%) translateY(0) scale(1);} }
   .notif-badge { position:absolute; top:-4px; right:-4px; background:#ef4444; color:#fff; font-size:9px; font-weight:700; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center; }
-  .post-menu-btn { opacity:.6; padding:4px; border-radius:8px; background:transparent; border:none; cursor:pointer; color:inherit; transition:opacity .2s; }
-  .post-menu-btn:hover { opacity:1; background:rgba(128,128,128,.2); }
-  .post-menu-dropdown { position:fixed; background:#1e293b; border-radius:12px; border:1px solid #334155; padding:6px; min-width:150px; z-index:50; box-shadow:0 10px 40px rgba(0,0,0,.5); }
-  .post-menu-dropdown button { display:block; width:100%; text-align:left; padding:8px 14px; border-radius:8px; font-size:12px; font-weight:500; background:transparent; border:none; color:#e2e8f0; cursor:pointer; }
+  .post-menu-btn { position:absolute; top:8px; right:8px; padding:5px; border-radius:8px; background:rgba(100,116,139,.15); border:none; cursor:pointer; color:#94a3b8; transition: background .2s, color .2s; display:flex; align-items:center; justify-content:center; }
+  .post-menu-btn:hover { background:rgba(100,116,139,.3); color:#e2e8f0; }
+  body.light-mode .post-menu-btn { color:#6b6b8a; }
+  body.light-mode .post-menu-btn:hover { background:rgba(107,107,138,.15); color:#1a1a2e; }
+  .post-menu-dropdown { position:fixed; background:#1e293b; border-radius:12px; border:1px solid #334155; padding:6px; min-width:150px; z-index:60; box-shadow:0 10px 40px rgba(0,0,0,.6); }
+  .post-menu-dropdown button { display:flex; align-items:center; gap:8px; width:100%; text-align:left; padding:9px 12px; border-radius:8px; font-size:12px; font-weight:500; background:transparent; border:none; color:#e2e8f0; cursor:pointer; transition: background .2s; }
   .post-menu-dropdown button:hover { background:#334155; }
-  .post-menu-dropdown .delete-btn { color:#ef4444; }
+  .post-menu-dropdown button.delete-btn { color:#ef4444; }
+  .post-menu-dropdown button.delete-btn:hover { background:rgba(239,68,68,.15); }
   body.light-mode .post-menu-dropdown { background:#fff; border-color:#e4e6eb; }
   body.light-mode .post-menu-dropdown button { color:#1a1a2e; }
   body.light-mode .post-menu-dropdown button:hover { background:#f0f2f5; }
+  body.light-mode .post-menu-dropdown button.delete-btn { color:#dc2626; }
+  body.light-mode .post-menu-dropdown button.delete-btn:hover { background:#fee2e2; }
+  .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,.85); backdrop-filter: blur(6px); z-index:80; display:flex; align-items:center; justify-content:center; padding:16px; }
+  .modal-card { background:#1e293b; width:100%; max-width:400px; border-radius:22px; border:1px solid #334155; padding:20px; max-height:85vh; display:flex; flex-direction:column; }
+  body.light-mode .modal-card { background:#ffffff; border-color:#e4e6eb; }
+  .modal-card input[type=text], .modal-card textarea { width:100%; background:#0b1528; border:1px solid #334155; border-radius:12px; padding:10px; color:#e2e8f0; font-size:12px; resize:none; }
+  body.light-mode .modal-card input[type=text], body.light-mode .modal-card textarea { background:#f0f2f5; border-color:#e4e6eb; color:#1a1a2e; }
   #img-viewer { position:fixed; inset:0; background:rgba(0,0,0,.95); z-index:90; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
   #img-viewer img { max-width:100%; max-height:80vh; border-radius:12px; }
 </style>
@@ -79,7 +89,6 @@
       </div>
     </header>
 
-    <!-- Skeleton loaders shown before feed arrives -->
     <div id="feed-skeleton" class="space-y-4">
       <div class="skeleton h-24"></div>
       <div class="skeleton h-24"></div>
@@ -113,6 +122,40 @@
   <img id="viewer-img" src="">
 </div>
 
+<!-- EDIT POST MODAL -->
+<div id="edit-post-modal" class="hidden modal-bg">
+  <div class="modal-card">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-sm font-bold text-slate-100">Edit Post</h3>
+      <button id="close-edit-modal" class="text-slate-500 hover:text-white text-xl leading-none">×</button>
+    </div>
+    <textarea id="edit-post-text" rows="4" placeholder="Post text..."></textarea>
+    <label class="block text-[10px] uppercase font-bold text-slate-500 mt-3 mb-1">Change Image (optional)</label>
+    <input type="file" id="edit-post-image" accept="image/*" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-slate-800 file:text-slate-200">
+    <div id="edit-preview-wrap" class="hidden mt-2">
+      <img id="edit-preview" class="max-h-32 rounded-lg">
+      <button id="edit-remove-image" class="text-[10px] text-red-400 underline mt-1">Remove image</button>
+    </div>
+    <button id="save-edit-btn" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl text-xs font-bold">Save Changes</button>
+  </div>
+</div>
+
+<!-- COMMENT MODAL -->
+<div id="comment-modal" class="hidden modal-bg">
+  <div class="modal-card">
+    <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3">
+      <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Comments</span>
+      <button id="close-comment-modal" class="text-slate-400 hover:text-white text-xs bg-slate-800 px-2.5 py-1 rounded-lg">Close</button>
+    </div>
+    <div id="comment-post-body" class="text-slate-300 text-xs mb-3 pb-3 border-b border-slate-800 max-h-20 overflow-y-auto"></div>
+    <div id="comment-list" class="flex-1 overflow-y-auto space-y-2 mb-3 custom-scrollbar" style="min-height:120px; max-height:45vh;"></div>
+    <div class="flex gap-2 pt-3 border-t border-slate-800">
+      <input type="text" id="comment-input" placeholder="Add a comment...">
+      <button id="comment-send-btn" class="bg-cyan-600 hover:bg-cyan-700 px-4 py-2 rounded-xl text-xs font-bold text-white shrink-0">Post</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast" class="success-toast hidden">
   <p id="toast-title" class="font-bold text-sm"></p>
   <p id="toast-message" class="text-xs text-emerald-200 mt-0.5"></p>
@@ -121,7 +164,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-  import { getDatabase, ref, get, set, remove, push, onValue, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+  import { getDatabase, ref, get, set, remove, push, update, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyC5ufTBjot8i-PJCBkJtUpc50jJcYmzMBQ",
@@ -136,16 +179,13 @@
   const auth = getAuth(app);
   const db = getDatabase(app);
 
-  // Theme
   const theme = localStorage.getItem('stardust_theme') || 'light';
   document.body.classList.remove('light-mode','dark-mode');
   document.body.classList.add(theme + '-mode');
 
-  // ---- Local state for THIS page only ----
-  let ME = null;       // current user object from /users/{uid}
-  let POSTS = [];      // publications (sorted desc)
+  let ME = null;
+  let POSTS = [];
 
-  // ---- Toast helper ----
   function toast(title, msg) {
     const el = document.getElementById('toast');
     document.getElementById('toast-title').textContent = title;
@@ -155,20 +195,13 @@
     window._toastTO = setTimeout(() => el.classList.add('hidden'), 3500);
   }
 
-  function openImg(src) {
-    document.getElementById('viewer-img').src = src;
-    document.getElementById('img-viewer').classList.remove('hidden');
-  }
-  window._openImg = openImg;
   document.getElementById('close-viewer').addEventListener('click', () => {
     document.getElementById('img-viewer').classList.add('hidden');
   });
 
-  // ---- Auth gate + load profile ----
   onAuthStateChanged(auth, async (user) => {
     if (!user) { window.location.replace('auth.html'); return; }
 
-    // Fetch minimal current user record (single read, no listener)
     const usersSnap = await get(ref(db, 'users'));
     const users = usersSnap.val() || {};
     for (const k of Object.keys(users)) {
@@ -176,15 +209,12 @@
     }
     if (!ME) { window.location.replace('auth.html'); return; }
 
-    // Notification badge: single read (not live)
     refreshNotifBadge();
 
-    // Live feed listener — ONLY on main.html
-    const feedRef = ref(db, 'publications');
-    onValue(feedRef, (snap) => {
+    onValue(ref(db, 'publications'), (snap) => {
       const data = snap.val() || {};
       POSTS = Object.keys(data)
-        .map(k => data[k])
+        .map(k => ({ dbKey: k, ...data[k] }))
         .filter(p => p && p.id && (p.text || p.image))
         .sort((a,b) => b.timestamp - a.timestamp);
       document.getElementById('feed-skeleton').classList.add('hidden');
@@ -202,7 +232,6 @@
     else b.classList.add('hidden');
   }
 
-  // ---- Feed render ----
   function renderFeed() {
     const feed = document.getElementById('feed');
     feed.innerHTML = '';
@@ -224,22 +253,22 @@
       card.className = 'bg-darkcard rounded-2xl border border-slate-800 p-4 space-y-3 text-xs shadow-md relative';
       card.innerHTML = `
         ${isOwner ? `
-          <button class="post-menu-btn absolute top-3 right-3" data-post-menu-btn="${post.id}">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+          <button class="post-menu-btn" data-menu-btn="${post.dbKey}" title="Options">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
           </button>` : ''}
-        <div class="flex items-center gap-2.5 cursor-pointer" data-author="${post.authorUID}">
+        <div class="flex items-center gap-2.5 cursor-pointer" data-author>
           <img src="${post.authorAvatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}" class="w-8 h-8 rounded-full object-cover border border-slate-700" loading="lazy">
           <div>
-            <h4 class="font-bold text-slate-200 ${fontClass}">${post.authorName || 'Unknown'}</h4>
+            <h4 class="font-bold text-slate-200 ${fontClass} pr-8">${post.authorName || 'Unknown'}</h4>
             <p class="text-[9px] text-slate-500 font-mono">@${post.authorUID} • ${post.timestamp ? new Date(post.timestamp).toLocaleDateString() : ''}</p>
           </div>
         </div>
         ${post.text ? `<p class="text-slate-300 leading-relaxed break-words ${fontClass}">${post.text}</p>` : ''}
         ${post.image ? `<div class="w-full max-h-52 rounded-xl overflow-hidden bg-slate-900 border border-slate-800 cursor-pointer" data-img><img src="${post.image}" class="w-full h-full object-cover" loading="lazy"></div>` : ''}
         <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-slate-500">
-          <button class="flex items-center gap-1.5 hover:text-red-400 ${liked?'text-red-500 font-bold':''}" data-like>
+          <button class="flex items-center gap-1.5 hover:text-red-400 ${liked ? 'text-red-500 font-bold' : ''}" data-like>
             <svg class="w-4 h-4" fill="${liked?'currentColor':'none'}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-            <span data-like-count>${likeCount}</span>
+            <span>${likeCount}</span>
           </button>
           <button class="flex items-center gap-1.5 hover:text-blue-400" data-comment>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
@@ -251,24 +280,25 @@
         </div>
       `;
 
-      // Events
-      const authorEl = card.querySelector('[data-author]');
-      authorEl.addEventListener('click', () => {
+      card.querySelector('[data-author]').addEventListener('click', () => {
         if (post.authorUID === myUID) window.location.href = 'profile.html';
         else window.location.href = 'profile.html?uid=' + encodeURIComponent(post.authorUID);
       });
 
       const imgEl = card.querySelector('[data-img]');
-      if (imgEl) imgEl.addEventListener('click', () => openImg(post.image));
+      if (imgEl) imgEl.addEventListener('click', () => {
+        document.getElementById('viewer-img').src = post.image;
+        document.getElementById('img-viewer').classList.remove('hidden');
+      });
 
       card.querySelector('[data-like]').addEventListener('click', (e) => {
         e.stopPropagation();
-        toggleLike(post.id, post.authorUID);
+        toggleLike(post.dbKey, post.id, post.authorUID);
       });
 
-      card.querySelector('[data-comment]').addEventListener('click', () => {
-        sessionStorage.setItem('open_post_id', post.id);
-        window.location.href = 'create.html#comment';
+      card.querySelector('[data-comment]').addEventListener('click', (e) => {
+        e.stopPropagation();
+        openCommentModal(post.id, post.text);
       });
 
       card.querySelector('[data-save]').addEventListener('click', (e) => {
@@ -276,11 +306,11 @@
         toggleSave(post.id);
       });
 
-      const menuBtn = card.querySelector('[data-post-menu-btn]');
+      const menuBtn = card.querySelector('[data-menu-btn]');
       if (menuBtn) {
         menuBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          showPostMenu(post.id, menuBtn);
+          openPostMenu(post, menuBtn);
         });
       }
 
@@ -288,22 +318,14 @@
     });
   }
 
-  // ---- Like ----
-  async function toggleLike(postId, authorUID) {
-    const snap = await get(ref(db, 'publications'));
-    const data = snap.val() || {};
-    let key = null;
-    for (const k of Object.keys(data)) {
-      if (data[k] && data[k].id === postId) { key = k; break; }
-    }
-    if (!key) return;
+  async function toggleLike(dbKey, postId, authorUID) {
     const myUID = ME.uid;
-    const wasLiked = data[key].likes && data[key].likes[myUID];
-    const likeRef = ref(db, `publications/${key}/likes/${myUID}`);
-    if (wasLiked) await remove(likeRef);
+    const snap = await get(ref(db, 'publications/' + dbKey + '/likes'));
+    const likes = snap.val() || {};
+    const likeRef = ref(db, `publications/${dbKey}/likes/${myUID}`);
+    if (likes[myUID]) await remove(likeRef);
     else {
       await set(likeRef, true);
-      // fire-and-forget notification
       if (authorUID && authorUID !== myUID) {
         pushNotif(authorUID, {
           type: 'like',
@@ -313,69 +335,222 @@
         });
       }
     }
-    // Realtime listener will re-render
   }
 
-  // ---- Save ----
   async function toggleSave(postId) {
     const arr = Array.isArray(ME.savedPosts) ? [...ME.savedPosts] : [];
     const idx = arr.indexOf(postId);
-    if (idx >= 0) arr.splice(idx, 1);
-    else arr.push(postId);
+    if (idx >= 0) { arr.splice(idx, 1); toast('Removed', 'Post removed from saved'); }
+    else { arr.push(postId); toast('Saved', 'Post saved'); }
     await update(ref(db, `users/${ME.uid}`), { savedPosts: arr });
     ME.savedPosts = arr;
-    toast(idx >= 0 ? 'Removed' : 'Saved', idx >= 0 ? 'Post removed from saved' : 'Post saved');
-    renderFeed();
   }
 
-  // ---- Post owner menu ----
-  function showPostMenu(postId, anchor) {
+  // ============================================================
+  // POST 3-DOT MENU (Edit + Delete)
+  // ============================================================
+  let editingPostId = null;
+  let editingImageBase64 = null;
+  let editingImageChanged = false;
+
+  function openPostMenu(post, anchor) {
     document.querySelectorAll('.post-menu-dropdown').forEach(el => el.remove());
     const rect = anchor.getBoundingClientRect();
     const menu = document.createElement('div');
     menu.className = 'post-menu-dropdown';
-    menu.style.top = (rect.bottom + 4) + 'px';
-    menu.style.right = (window.innerWidth - rect.right) + 'px';
+    menu.style.top = (rect.bottom + 6) + 'px';
+    menu.style.right = Math.max(8, window.innerWidth - rect.right) + 'px';
     menu.innerHTML = `
-      <button data-action="edit">Edit Post</button>
-      <button data-action="delete" class="delete-btn">Delete Post</button>
+      <button data-action="edit">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+        Edit Post
+      </button>
+      <button data-action="delete" class="delete-btn">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        Delete Post
+      </button>
     `;
     document.body.appendChild(menu);
 
     const close = (e) => {
-      if (!e.target.closest('.post-menu-dropdown') && !e.target.closest('[data-post-menu-btn]')) {
+      if (!e.target.closest('.post-menu-dropdown') && !e.target.closest('[data-menu-btn]')) {
         menu.remove();
         document.removeEventListener('click', close);
       }
     };
     setTimeout(() => document.addEventListener('click', close), 10);
 
+    menu.querySelector('[data-action="edit"]').addEventListener('click', () => {
+      menu.remove();
+      openEditPost(post);
+    });
+
     menu.querySelector('[data-action="delete"]').addEventListener('click', async () => {
       menu.remove();
       if (!confirm('Delete this post?')) return;
-      const snap = await get(ref(db, 'publications'));
-      const data = snap.val() || {};
-      for (const k of Object.keys(data)) {
-        if (data[k] && data[k].id === postId) {
-          await remove(ref(db, 'publications/' + k));
-          toast('Deleted', 'Post removed');
-          return;
-        }
+      try {
+        await remove(ref(db, 'publications/' + post.dbKey));
+        toast('Deleted', 'Post deleted successfully');
+      } catch (err) {
+        toast('Error', 'Failed to delete: ' + err.message);
       }
-    });
-
-    menu.querySelector('[data-action="edit"]').addEventListener('click', () => {
-      const post = POSTS.find(p => p.id === postId);
-      if (!post) return;
-      sessionStorage.setItem('edit_post_id', postId);
-      window.location.href = 'create.html?edit=1';
     });
   }
 
-  // ---- Notifications helper (write to target user) ----
+  function openEditPost(post) {
+    editingPostId = post.dbKey;
+    editingImageBase64 = post.image || null;
+    editingImageChanged = false;
+    document.getElementById('edit-post-text').value = post.text || '';
+    document.getElementById('edit-post-image').value = '';
+    const wrap = document.getElementById('edit-preview-wrap');
+    if (post.image) {
+      document.getElementById('edit-preview').src = post.image;
+      wrap.classList.remove('hidden');
+    } else wrap.classList.add('hidden');
+    document.getElementById('edit-post-modal').classList.remove('hidden');
+  }
+
+  document.getElementById('close-edit-modal').addEventListener('click', () => {
+    document.getElementById('edit-post-modal').classList.add('hidden');
+    editingPostId = null;
+  });
+
+  document.getElementById('edit-post-image').addEventListener('change', (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = (ev) => {
+      editingImageBase64 = ev.target.result;
+      editingImageChanged = true;
+      document.getElementById('edit-preview').src = ev.target.result;
+      document.getElementById('edit-preview-wrap').classList.remove('hidden');
+    };
+    r.readAsDataURL(f);
+  });
+
+  document.getElementById('edit-remove-image').addEventListener('click', () => {
+    editingImageBase64 = null;
+    editingImageChanged = true;
+    document.getElementById('edit-post-image').value = '';
+    document.getElementById('edit-preview-wrap').classList.add('hidden');
+  });
+
+  document.getElementById('save-edit-btn').addEventListener('click', async () => {
+    if (!editingPostId) return;
+    const newText = document.getElementById('edit-post-text').value.trim();
+    if (!newText && !editingImageBase64) { toast('Error', 'Post needs text or image'); return; }
+    const updates = { text: newText };
+    if (editingImageChanged) updates.image = editingImageBase64;
+    try {
+      await update(ref(db, 'publications/' + editingPostId), updates);
+      document.getElementById('edit-post-modal').classList.add('hidden');
+      toast('Updated', 'Post updated');
+      editingPostId = null;
+    } catch (e) {
+      toast('Error', 'Update failed: ' + e.message);
+    }
+  });
+
+  // ============================================================
+  // COMMENT MODAL (inline)
+  // ============================================================
+  let commentPostId = null;
+  let commentDbKey = null;
+  let commentUnsub = null;
+
+  async function openCommentModal(postId, postText) {
+    commentPostId = postId;
+    document.getElementById('comment-post-body').textContent = postText || '(no text)';
+    document.getElementById('comment-input').value = '';
+    document.getElementById('comment-modal').classList.remove('hidden');
+
+    if (commentUnsub) { commentUnsub(); commentUnsub = null; }
+
+    // Find db key
+    const snap = await get(ref(db, 'publications'));
+    const data = snap.val() || {};
+    commentDbKey = null;
+    for (const k of Object.keys(data)) {
+      if (data[k] && data[k].id === postId) { commentDbKey = k; break; }
+    }
+    if (!commentDbKey) return;
+
+    const unsub = onValue(ref(db, `publications/${commentDbKey}/comments`), (s) => {
+      renderComments(s.val() || {});
+    });
+    commentUnsub = unsub;
+  }
+
+  function renderComments(comments) {
+    const c = document.getElementById('comment-list');
+    c.innerHTML = '';
+    const keys = Object.keys(comments);
+    if (!keys.length) {
+      c.innerHTML = `<p class="text-[10px] text-slate-600 italic text-center py-4">No comments yet</p>`;
+      return;
+    }
+    keys.sort((a,b) => (comments[a].timestamp||0) - (comments[b].timestamp||0));
+    const myUID = ME.uid;
+    keys.forEach(k => {
+      const cm = comments[k];
+      const mine = cm.authorUID === myUID;
+      const row = document.createElement('div');
+      row.className = 'bg-slate-900 border border-slate-800 p-2.5 rounded-xl text-xs flex justify-between items-start gap-2';
+      row.innerHTML = `
+        <div class="min-w-0">
+          <p class="font-bold text-slate-400">@${cm.authorName}</p>
+          <p class="text-slate-300 break-words">${cm.text}</p>
+        </div>
+        ${mine ? `<button class="text-red-400 p-1 shrink-0" data-del>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </button>` : ''}
+      `;
+      if (mine) {
+        row.querySelector('[data-del]').addEventListener('click', async () => {
+          if (!confirm('Delete comment?')) return;
+          await remove(ref(db, `publications/${commentDbKey}/comments/${k}`));
+        });
+      }
+      c.appendChild(row);
+    });
+    c.scrollTop = c.scrollHeight;
+  }
+
+  document.getElementById('close-comment-modal').addEventListener('click', () => {
+    document.getElementById('comment-modal').classList.add('hidden');
+    if (commentUnsub) { commentUnsub(); commentUnsub = null; }
+    commentPostId = null;
+    commentDbKey = null;
+  });
+
+  document.getElementById('comment-send-btn').addEventListener('click', async () => {
+    const input = document.getElementById('comment-input');
+    const txt = input.value.trim();
+    if (!txt || !commentDbKey) return;
+
+    await push(ref(db, `publications/${commentDbKey}/comments`), {
+      authorUID: ME.uid,
+      authorName: ME.name,
+      text: txt,
+      timestamp: Date.now()
+    });
+    input.value = '';
+
+    const post = POSTS.find(p => p.id === commentPostId);
+    if (post && post.authorUID && post.authorUID !== ME.uid) {
+      pushNotif(post.authorUID, {
+        type: 'comment',
+        message: `${ME.name} commented: "${txt}"`,
+        sourceUserId: ME.uid,
+        postId: commentPostId
+      });
+    }
+  });
+
   async function pushNotif(targetUID, notif) {
     try {
-      const notifObj = {
+      const obj = {
         id: 'n_' + Date.now() + '_' + Math.floor(Math.random()*1000),
         ...notif,
         targetUserId: targetUID,
@@ -383,13 +558,11 @@
         read: false
       };
       const snap = await get(ref(db, `users/${targetUID}/notifications`));
-      const list = snap.val() || [];
-      const arr = Array.isArray(list) ? list : [];
-      arr.unshift(notifObj);
+      const arr = Array.isArray(snap.val()) ? snap.val() : [];
+      arr.unshift(obj);
       const cutoff = Date.now() - 7*24*60*60*1000;
-      const trimmed = arr.filter(n => n.timestamp > cutoff).slice(0, 50);
-      await set(ref(db, `users/${targetUID}/notifications`), trimmed);
-    } catch (e) { /* silent */ }
+      await set(ref(db, `users/${targetUID}/notifications`), arr.filter(n => n.timestamp > cutoff).slice(0,50));
+    } catch (e) {}
   }
 </script>
 </body>
