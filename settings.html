@@ -28,13 +28,14 @@
   body.light-mode .bg-slate-800 { background:#e8e8ee !important; }
   body.light-mode .bg-slate-900 { background:#f5f5f8 !important; }
   body.light-mode .bg-slate-200 { background:#e8e8ee !important; }
+  body.light-mode .bg-slate-100 { background:#f0f0f5 !important; }
   body.light-mode .bg-slate-800\/50 { background:rgba(232,232,238,.5) !important; }
   body.light-mode .bg-slate-800\/60 { background:rgba(232,232,238,.6) !important; }
-  body.light-mode .bg-slate-100 { background:#f0f0f5 !important; }
   body.light-mode .hover\:bg-slate-200:hover { background:#d8d8de !important; }
   body.light-mode .hover\:bg-slate-700:hover { background:#c8c8d0 !important; }
   body.light-mode .hover\:bg-slate-800:hover { background:#dddde4 !important; }
   body.light-mode .border-slate-300 { border-color:#d0d2d6 !important; }
+  body.light-mode .border-slate-700 { border-color:#d0d2d6 !important; }
   body.dark-mode { background:#0b1528; color:#f1f5f9; }
   .hidden { display:none !important; }
   .success-toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#065f46,#047857); border:1px solid #34d399; color:#fff; padding:14px 20px; border-radius:18px; z-index:200; box-shadow:0 20px 60px rgba(0,0,0,.5); max-width:90%; text-align:center; animation:toastIn .4s ease-out; }
@@ -44,26 +45,12 @@
   .toggle-dot { position:absolute; top:2px; left:2px; width:20px; height:20px; background:#fff; border-radius:50%; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
   .toggle-on .toggle-track { background:#06b6d4; }
   .toggle-on .toggle-dot { transform: translateX(16px); }
-  .premium-theme-galaxy { background: linear-gradient(135deg,#0b0a1a,#1a0a3e,#2a0a5e) !important; border-color:#7c3aed !important; color:#e0d7ff !important; }
-  .premium-theme-sunset { background: linear-gradient(135deg,#1a0a0a,#4a1a0a,#7a2a0a) !important; border-color:#f97316 !important; color:#ffedd5 !important; }
-  .premium-theme-ocean { background: linear-gradient(135deg,#0a0a2a,#0a2a5a,#0a4a8a) !important; border-color:#0ea5e9 !important; color:#dbeafe !important; }
-  .premium-theme-forest { background: linear-gradient(135deg,#0a1a0a,#0a3a0a,#0a5a0a) !important; border-color:#22c55e !important; color:#dcfce7 !important; }
-  .premium-theme-rose { background: linear-gradient(135deg,#1a0a1a,#4a0a2a,#7a0a3a) !important; border-color:#ec4899 !important; color:#fce7f3 !important; }
-  .premium-theme-gold { background: linear-gradient(135deg,#1a1a0a,#3a2a0a,#5a3a0a) !important; border-color:#f59e0b !important; color:#fef3c7 !important; }
-  .premium-theme-ice { background: linear-gradient(135deg,#0a1a2a,#0a3a5a,#0a5a8a) !important; border-color:#67e8f9 !important; color:#cffafe !important; }
-  .premium-theme-almond { background: linear-gradient(135deg,#2a1a0a,#4a2a1a,#6a3a2a) !important; border-color:#d4a373 !important; color:#fefae0 !important; }
-  .premium-theme-royal { background: linear-gradient(135deg,#1a0a2a,#2a0a4a,#3a0a6a) !important; border-color:#8b5cf6 !important; color:#ede9fe !important; }
-  .premium-theme-cherry { background: linear-gradient(135deg,#2a0a0a,#4a0a0a,#6a0a0a) !important; border-color:#ef4444 !important; color:#fecaca !important; }
-  .premium-frame-gold { border:3px solid #f59e0b !important; box-shadow:0 0 40px rgba(245,158,11,.5) !important; }
-  .premium-frame-cyan { border:3px solid #06b6d4 !important; box-shadow:0 0 40px rgba(6,182,212,.5) !important; }
-  .premium-frame-pink { border:3px solid #ec4899 !important; box-shadow:0 0 40px rgba(236,72,153,.5) !important; }
-  .premium-frame-purple { border:3px solid #a855f7 !important; box-shadow:0 0 40px rgba(168,85,247,.5) !important; }
-  .premium-frame-emerald { border:3px solid #10b981 !important; box-shadow:0 0 40px rgba(16,185,129,.5) !important; }
-  .premium-frame-almond { border:3px solid #d4a373 !important; box-shadow:0 0 40px rgba(212,163,115,.5) !important; }
-  .premium-frame-royal { border:3px solid #8b5cf6 !important; box-shadow:0 0 40px rgba(139,92,246,.5) !important; }
-  .premium-frame-cherry { border:3px solid #ef4444 !important; box-shadow:0 0 40px rgba(239,68,68,.5) !important; }
-  .premium-frame-glow { border:3px solid rgba(124,58,237,.6) !important; box-shadow:0 0 40px rgba(124,58,237,.5) !important; }
-  .premium-frame-rainbow { border:3px solid transparent !important; background-image:linear-gradient(white,white),linear-gradient(to right,red,orange,yellow,green,blue,purple) !important; background-origin:padding-box,border-box !important; background-clip:padding-box,border-box !important; }
+  .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,.85); backdrop-filter: blur(6px); z-index:80; display:flex; align-items:center; justify-content:center; padding:16px; }
+  .modal-card { background:#1e293b; width:100%; max-width:400px; border-radius:22px; border:1px solid #334155; padding:20px; max-height:85vh; display:flex; flex-direction:column; }
+  body.light-mode .modal-card { background:#ffffff; border-color:#e4e6eb; }
+  .modal-card input[type=text], .modal-card textarea, .modal-card select { width:100%; background:#0b1528; border:1px solid #334155; border-radius:12px; padding:10px; color:#e2e8f0; font-size:12px; }
+  body.light-mode .modal-card input[type=text], body.light-mode .modal-card textarea, body.light-mode .modal-card select { background:#f0f2f5; border-color:#e4e6eb; color:#1a1a2e; }
+  .modal-card textarea { resize:none; }
 </style>
 </head>
 <body class="light-mode bg-darkbg min-h-screen">
@@ -77,7 +64,6 @@
   </header>
 
   <main class="px-4 py-4 space-y-2">
-    <!-- Dark mode toggle -->
     <div id="theme-row" class="bg-slate-800/60 border border-slate-800 p-3 rounded-xl flex justify-between items-center cursor-pointer">
       <span class="text-xs font-semibold text-slate-300">Dark Mode</span>
       <div class="toggle-track" id="theme-toggle"><div class="toggle-dot"></div></div>
@@ -115,20 +101,20 @@
   </main>
 </div>
 
-<!-- SUB SETTINGS -->
-<div id="sub-modal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50">
-  <div class="bg-darkcard w-full max-w-sm rounded-3xl border border-slate-800 p-5 flex flex-col max-h-[80vh]">
+<!-- SUB SETTINGS MODAL -->
+<div id="sub-modal" class="hidden modal-bg">
+  <div class="modal-card">
     <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
       <h3 id="sub-title" class="text-xs font-bold uppercase tracking-widest text-cyan-400">Workspace</h3>
       <button id="close-sub" class="text-slate-500 hover:text-white text-xs bg-slate-800 px-2.5 py-1 rounded-lg">Back</button>
     </div>
-    <div id="sub-body" class="flex-1 text-xs overflow-y-auto custom-scrollbar space-y-2 pr-1 text-slate-300"></div>
+    <div id="sub-body" class="flex-1 text-xs overflow-y-auto space-y-2 pr-1 text-slate-300"></div>
   </div>
 </div>
 
-<!-- PREMIUM DASHBOARD -->
-<div id="premium-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-  <div class="bg-darkcard w-full max-w-sm rounded-3xl border border-slate-800 p-5 shadow-2xl max-h-[85vh] overflow-y-auto custom-scrollbar">
+<!-- PREMIUM MODAL -->
+<div id="premium-modal" class="hidden modal-bg">
+  <div class="modal-card" style="max-height:90vh;">
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-xs font-bold uppercase tracking-wider text-amber-500">Premium Dashboard</h3>
       <button id="close-premium" class="text-slate-500 hover:text-white text-xl leading-none">×</button>
@@ -139,7 +125,7 @@
       <button id="activate-premium" class="w-full bg-gradient-to-r from-amber-500 to-yellow-500 py-3 rounded-xl text-xs font-black text-white shadow-lg">Activate Premium (30 days)</button>
     </div>
 
-    <div id="premium-tweak-wrap" class="hidden space-y-4">
+    <div id="premium-tweak-wrap" class="hidden space-y-4 overflow-y-auto">
       <div>
         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Themes</p>
         <div class="grid grid-cols-2 gap-2 text-xs">
@@ -216,7 +202,6 @@
 
   const FIXED_PROFESSIONS = ["Architect", "Software Engineer", "Systems Analyst", "Cybersecurity Specialist", "Creative Designer"];
 
-  // Theme handling
   function applyTheme(theme) {
     document.body.classList.remove('light-mode','dark-mode');
     document.body.classList.add(theme + '-mode');
@@ -233,6 +218,7 @@
   });
 
   let ME = null;
+  let MY_DB_KEY = null;
 
   function toast(title, msg) {
     const el = document.getElementById('toast');
@@ -246,35 +232,34 @@
   onAuthStateChanged(auth, async (user) => {
     if (!user) { window.location.replace('auth.html'); return; }
 
-    // Live watch on ME record so premium toggle reflects immediately
     const usersSnap = await get(ref(db, 'users'));
     const users = usersSnap.val() || {};
-    let myNodeKey = null;
     for (const k of Object.keys(users)) {
-      if (users[k] && users[k].realFirebaseUID === user.uid) { ME = users[k]; myNodeKey = k; break; }
+      if (users[k] && users[k].realFirebaseUID === user.uid) {
+        ME = users[k];
+        MY_DB_KEY = k;
+        break;
+      }
     }
     if (!ME) { window.location.replace('auth.html'); return; }
 
-    // Check premium expiry on load
     if (ME.isPremium && ME.premiumExpiry && Date.now() > ME.premiumExpiry) {
-      await update(ref(db, `users/${myNodeKey}`), { isPremium: false, premiumTheme: '', premiumFrame: '', premiumFont: '' });
+      await update(ref(db, `users/${MY_DB_KEY}`), { isPremium: false, premiumTheme: '', premiumFrame: '', premiumFont: '' });
       ME.isPremium = false; ME.premiumTheme = ''; ME.premiumFrame = ''; ME.premiumFont = '';
-      toast('Premium Expired', 'Your premium subscription has ended.');
+      toast('Premium Expired', 'Your premium has ended.');
     }
 
-    // Watch for live premium updates
-    onValue(ref(db, `users/${myNodeKey}`), (s) => {
+    onValue(ref(db, `users/${MY_DB_KEY}`), (s) => {
       const data = s.val();
       if (data) ME = data;
     });
 
-    // Deep-link #premium
     if (window.location.hash === '#premium') openPremium();
   });
 
-  // Sub-settings
-  let subData = null;
-
+  // ============================================================
+  // SUB SETTINGS
+  // ============================================================
   document.querySelectorAll('[data-page]').forEach(btn => {
     btn.addEventListener('click', () => openSub(btn.dataset.page));
   });
@@ -283,42 +268,69 @@
     const title = document.getElementById('sub-title');
     const body = document.getElementById('sub-body');
     body.innerHTML = '';
+    document.getElementById('sub-modal').classList.remove('hidden');
 
     if (type === 'edit-profile') {
       title.textContent = 'Edit Profile';
       body.innerHTML = `
         <div class="space-y-3">
-          <div><label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Display Name</label>
-            <input id="sub-name" type="text" value="${ME.name}" class="w-full bg-darkbg border border-slate-800 rounded-xl px-3 py-2 text-slate-200"></div>
-          <div><label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Profile Avatar</label>
-            <input id="sub-pfp" type="file" accept="image/*" class="w-full text-slate-500 text-[11px]"></div>
-          <div><label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Biography</label>
-            <textarea id="sub-bio" class="w-full bg-darkbg border border-slate-800 rounded-xl px-3 py-2 resize-none h-20 text-slate-200">${ME.bio || ''}</textarea></div>
-          <div><label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Profession</label>
-            <select id="sub-prof" class="w-full bg-darkbg border border-slate-800 rounded-xl px-3 py-2 text-slate-200">
+          <div>
+            <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Display Name</label>
+            <input id="sub-name" type="text" value="${ME.name || ''}">
+          </div>
+          <div>
+            <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Profile Avatar</label>
+            <input id="sub-pfp" type="file" accept="image/*" class="w-full text-slate-500 text-[11px]">
+            <div id="sub-pfp-preview-wrap" class="mt-2 ${ME.pfp ? '' : 'hidden'}">
+              <img id="sub-pfp-preview" src="${ME.pfp || ''}" class="w-16 h-16 rounded-full object-cover border border-slate-700">
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Biography</label>
+            <textarea id="sub-bio" rows="3">${ME.bio || ''}</textarea>
+          </div>
+          <div>
+            <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Profession</label>
+            <select id="sub-prof">
               <option value="">(None)</option>
               ${FIXED_PROFESSIONS.map(p => `<option value="${p}" ${ME.profession === p ? 'selected' : ''}>${p}</option>`).join('')}
-            </select></div>
-          <button id="sub-save" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl mt-2">Save Changes</button>
+            </select>
+          </div>
+          <button id="sub-save" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl mt-2">Save Changes</button>
         </div>
       `;
       document.getElementById('sub-save').addEventListener('click', saveProfileEdit);
-    } else if (type === 'liked-posts') {
+      document.getElementById('sub-pfp').addEventListener('change', (e) => {
+        const f = e.target.files[0];
+        if (!f) return;
+        const r = new FileReader();
+        r.onload = (ev) => {
+          document.getElementById('sub-pfp-preview').src = ev.target.result;
+          document.getElementById('sub-pfp-preview-wrap').classList.remove('hidden');
+        };
+        r.readAsDataURL(f);
+      });
+    }
+
+    else if (type === 'liked-posts') {
       title.textContent = 'Liked Publications';
       const snap = await get(ref(db, 'publications'));
       const data = snap.val() || {};
       const liked = Object.keys(data).map(k => data[k]).filter(p => p && p.likes && p.likes[ME.uid]);
-      if (!liked.length) body.innerHTML = `<p class="text-center text-slate-600">No liked publications yet.</p>`;
-      else {
+      if (!liked.length) {
+        body.innerHTML = `<p class="text-center text-slate-600 py-4">No liked publications yet.</p>`;
+      } else {
         liked.forEach(p => {
           body.innerHTML += `
-            <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-xl mb-1">
-              <p class="text-slate-300">${p.text || ''}</p>
-              ${p.image ? `<div class="mt-1 rounded-lg overflow-hidden max-h-24"><img src="${p.image}" class="w-full h-full object-cover" loading="lazy"></div>` : ''}
+            <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-xl mb-2">
+              <p class="text-slate-300">${p.text || '(no text)'}</p>
+              ${p.image ? `<div class="mt-2 rounded-lg overflow-hidden max-h-32"><img src="${p.image}" class="w-full h-full object-cover" loading="lazy"></div>` : ''}
             </div>`;
         });
       }
-    } else if (type === 'commented-posts') {
+    }
+
+    else if (type === 'commented-posts') {
       title.textContent = 'Commented Logs';
       const snap = await get(ref(db, 'publications'));
       const data = snap.val() || {};
@@ -327,21 +339,22 @@
         const p = data[k];
         if (p && p.comments) {
           Object.values(p.comments).forEach(cm => {
-            if (cm.authorUID === ME.uid) found.push({ post: p.text, comment: cm.text });
+            if (cm.authorUID === ME.uid) found.push({ post: p.text || '(no text)', comment: cm.text });
           });
         }
       });
-      if (!found.length) body.innerHTML = `<p class="text-center text-slate-600">No comments yet.</p>`;
-      else found.forEach(c => {
-        body.innerHTML += `
-          <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-xl mb-1">
-            <p class="text-slate-500 text-[10px]">On: ${c.post}</p>
-            <p class="text-slate-300 mt-1">${c.comment}</p>
-          </div>`;
-      });
+      if (!found.length) {
+        body.innerHTML = `<p class="text-center text-slate-600 py-4">No comments yet.</p>`;
+      } else {
+        found.forEach(c => {
+          body.innerHTML += `
+            <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-xl mb-2">
+              <p class="text-slate-500 text-[10px]">On: ${c.post}</p>
+              <p class="text-slate-300 mt-1">${c.comment}</p>
+            </div>`;
+        });
+      }
     }
-
-    document.getElementById('sub-modal').classList.remove('hidden');
   }
 
   async function saveProfileEdit() {
@@ -350,14 +363,20 @@
     const prof = document.getElementById('sub-prof').value;
     const fileInput = document.getElementById('sub-pfp');
 
-    if (!name) return toast('Error', 'Name is required');
+    if (!name) { toast('Error', 'Name is required'); return; }
 
     const commit = async (pfpBase64) => {
       const payload = { name, bio, profession: prof };
       if (pfpBase64) payload.pfp = pfpBase64;
-      await update(ref(db, `users/${ME.uid}`), payload);
-      document.getElementById('sub-modal').classList.add('hidden');
-      toast('Saved', 'Profile updated');
+      try {
+        await update(ref(db, `users/${MY_DB_KEY}`), payload);
+        ME.name = name; ME.bio = bio; ME.profession = prof;
+        if (pfpBase64) ME.pfp = pfpBase64;
+        document.getElementById('sub-modal').classList.add('hidden');
+        toast('Saved', 'Profile updated successfully');
+      } catch (e) {
+        toast('Error', e.message);
+      }
     };
 
     if (fileInput.files[0]) {
@@ -373,10 +392,11 @@
     document.getElementById('sub-modal').classList.add('hidden');
   });
 
-  // Premium
+  // ============================================================
+  // PREMIUM
+  // ============================================================
   function openPremium() {
-    const modal = document.getElementById('premium-modal');
-    modal.classList.remove('hidden');
+    document.getElementById('premium-modal').classList.remove('hidden');
     const activateWrap = document.getElementById('premium-activate-wrap');
     const tweakWrap = document.getElementById('premium-tweak-wrap');
     if (ME.isPremium) {
@@ -387,6 +407,7 @@
       tweakWrap.classList.add('hidden');
     }
   }
+
   document.getElementById('premium-btn').addEventListener('click', openPremium);
   document.getElementById('close-premium').addEventListener('click', () => {
     document.getElementById('premium-modal').classList.add('hidden');
@@ -394,43 +415,65 @@
 
   document.getElementById('activate-premium').addEventListener('click', async () => {
     const expiry = Date.now() + 30*24*60*60*1000;
-    await update(ref(db, `users/${ME.uid}`), { isPremium: true, premiumExpiry: expiry });
-    toast('Premium Activated', 'You now have 30 days of premium');
-    setTimeout(openPremium, 300);
+    try {
+      await update(ref(db, `users/${MY_DB_KEY}`), { isPremium: true, premiumExpiry: expiry });
+      ME.isPremium = true; ME.premiumExpiry = expiry;
+      toast('Premium Activated', 'You now have 30 days of premium');
+      setTimeout(openPremium, 400);
+    } catch (e) {
+      toast('Error', e.message);
+    }
   });
 
   document.querySelectorAll('[data-theme]').forEach(b => {
     b.addEventListener('click', async () => {
-      await update(ref(db, `users/${ME.uid}`), { premiumTheme: b.dataset.theme });
-      toast('Applied', 'Theme updated');
+      try {
+        await update(ref(db, `users/${MY_DB_KEY}`), { premiumTheme: b.dataset.theme });
+        ME.premiumTheme = b.dataset.theme;
+        toast('Applied', 'Theme updated');
+      } catch (e) { toast('Error', e.message); }
     });
   });
   document.querySelectorAll('[data-frame]').forEach(b => {
     b.addEventListener('click', async () => {
-      await update(ref(db, `users/${ME.uid}`), { premiumFrame: b.dataset.frame });
-      toast('Applied', 'Frame updated');
+      try {
+        await update(ref(db, `users/${MY_DB_KEY}`), { premiumFrame: b.dataset.frame });
+        ME.premiumFrame = b.dataset.frame;
+        toast('Applied', 'Frame updated');
+      } catch (e) { toast('Error', e.message); }
     });
   });
   document.querySelectorAll('[data-font]').forEach(b => {
     b.addEventListener('click', async () => {
-      await update(ref(db, `users/${ME.uid}`), { premiumFont: b.dataset.font });
-      toast('Applied', 'Font updated');
+      try {
+        await update(ref(db, `users/${MY_DB_KEY}`), { premiumFont: b.dataset.font });
+        ME.premiumFont = b.dataset.font;
+        toast('Applied', 'Font updated');
+      } catch (e) { toast('Error', e.message); }
     });
   });
   document.getElementById('clear-premium').addEventListener('click', async () => {
-    await update(ref(db, `users/${ME.uid}`), { premiumTheme: '', premiumFrame: '', premiumFont: '' });
-    toast('Reset', 'Premium styles cleared');
+    try {
+      await update(ref(db, `users/${MY_DB_KEY}`), { premiumTheme: '', premiumFrame: '', premiumFont: '' });
+      ME.premiumTheme = ''; ME.premiumFrame = ''; ME.premiumFont = '';
+      toast('Reset', 'Premium styles cleared');
+    } catch (e) { toast('Error', e.message); }
   });
 
-  // Logout
+  // ============================================================
+  // LOGOUT + DELETE ACCOUNT
+  // ============================================================
   document.getElementById('logout-btn').addEventListener('click', async () => {
     if (!confirm('Sign out of Stardust?')) return;
-    await signOut(auth);
-    localStorage.removeItem('STARDUST_CORE_DB_PROD');
-    window.location.replace('auth.html');
+    try {
+      await signOut(auth);
+      localStorage.removeItem('STARDUST_CORE_DB_PROD');
+      window.location.replace('auth.html');
+    } catch (e) {
+      toast('Error', e.message);
+    }
   });
 
-  // Delete account
   document.getElementById('delete-btn').addEventListener('click', async () => {
     if (!confirm('Permanently delete your account? All posts, reels and data will be lost.')) return;
     if (!confirm('Are you absolutely sure? This cannot be undone.')) return;
@@ -444,7 +487,7 @@
       setTimeout(() => window.location.replace('auth.html'), 1200);
     } catch (e) {
       if (e.code === 'auth/requires-recent-login') {
-        toast('Error', 'Please sign out and sign in again, then retry.');
+        toast('Error', 'Please sign out, sign in again, then retry.');
       } else {
         toast('Error', e.message);
       }
